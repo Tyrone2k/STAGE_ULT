@@ -16,10 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from Suppervision import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('Suppevrvision/', include('Suppervision.urls'))
+    path('', include('Suppervision.urls'))
 
 ]
