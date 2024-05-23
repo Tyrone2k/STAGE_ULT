@@ -2,55 +2,52 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in</title>
-    <link rel="stylesheet" href="{% static 'signin.css' %}">
-    <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
-    <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
-    <style>
-        .bd-placeholder-img {
-          font-size: 1.125rem;
-          text-anchor: middle;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          user-select: none;
-        }
-  
-        @media (min-width: 768px) {
-          .bd-placeholder-img-lg {
-            font-size: 3.5rem;
-          }
-        }
-      </style>
-  
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <title>sign up</title>
 
-   <main class="form-signin text-center">
-    <form>
-      <img class="mb-4" src="../../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+
+
+    <style media="screen">
+      body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: linear-gradient(to right, #b92b27, #1565c0)
+}
   
-      <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-        <label for="floatingInput">Email address</label>
-      </div>
-      <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-        <label for="floatingPassword">Password</label>
-      </div>
-  
-      <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
-      </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-      <p class="mt-5 mb-3 text-muted">&copy; 2023–2024</p>
-    </form>
-  </main>
-  
-</body>
+    </style>
+    <link href="signin.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <form class="box" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                    <h1>INSCRIPTION DU CLIENT</h1>
+                    <p class="text-muted"> Entre les détails s'il vous plait !</p>
+                      {% render userForm.first_name class="form-control" placeholder="First Name" %}
+                        {% render userForm.last_name class="form-control" placeholder="Last Name" %}
+                          {% render userForm.username class="form-control" placeholder="Username" %}
+                            {% render userForm.password class="form-control" placeholder="Password" %}
+                              {% render customerForm.address class="form-control" placeholder="Address" %}
+                                {% render customerForm.mobile class="form-control" placeholder="Mobile" %}
+                                  {% render customerForm.profile_pic class="form-control" placeholder="Profile pic" %}
+                  
+                     <input type="submit" name="" value="Create">
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br>
+  </body>
 </html>

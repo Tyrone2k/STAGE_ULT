@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Connexion</title>
+    <style media="screen">
+      body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: linear-gradient(to right, #b92b27, #1565c0)
+}
+    </style>
+    <link href="login.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <form class="box" method="post">
+                  {% csrf_token %}
+                    <h1>Client Login</h1>
+                    <p class="text-muted"> Entrez votre mot de passe s'il vous plait !</p>
+                               {% render form.username class="form-control" placeholder="Username" %}
+                               {% render form.password class="form-control" placeholder="Password" %}
+                     <input type="submit" name="" value="Login" >
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br>
+  </body>
+</html>

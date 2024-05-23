@@ -13,7 +13,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Design)
 class DesignAdmin(admin.ModelAdmin):
-    list_display =  ("nom",)
+    list_display =  "nom","image"
 
 @admin.register(CategoryDesign)
 class CategoryDesignAdmin(admin.ModelAdmin):
