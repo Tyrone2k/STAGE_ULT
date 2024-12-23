@@ -1,41 +1,142 @@
 {% load static %}
-
-<!DOCTYPE html>
 {% load widget_tweaks %}
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <style media="screen">
-      body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: linear-gradient(to right, #b92b27, #1565c0)
-}
-    </style>
-    <link href="login.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <form class="box" method="post">
-                  {% csrf_token %}
-                    <h1>Client Login</h1>
-                    <p class="text-muted"> Entrez votre mot de passe s'il vous plait !</p>
-                               {% render form.username class="form-control" placeholder="Username" %}
-                               {% render form.password class="form-control" placeholder="Password" %}
-                     <input type="submit" name="" value="Login" >
+    <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: linear-gradient(to right, #b92b27, #1565c0);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-                </form>
-            </div>
+        .box {
+            width: 400px;
+            padding: 40px;
+            background: #191919;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .box h1 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .box p {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .box input[type="text"],
+        .box input[type="password"] {
+            border: 0;
+            background: none;
+            display: block;
+            margin: 10px auto;
+            text-align: center;
+            border: 2px solid #3498db;
+            padding: 10px 10px;
+            width: 80%;
+            outline: none;
+            color: white;
+            border-radius: 24px;
+            transition: 0.25s;
+        }
+
+        .box input[type="text"]:focus,
+        .box input[type="password"]:focus {
+            width: 90%;
+            border-color: #2ecc71;
+        }
+
+        .box input[type="submit"] {
+            border: 0;
+            background: none;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            border: 2px solid #2ecc71;
+            padding: 10px 30px;
+            outline: none;
+            color: white;
+            border-radius: 24px;
+            transition: 0.25s;
+            cursor: pointer;
+        }
+
+        .box input[type="submit"]:hover {
+            background: #2ecc71;
+        }
+
+        .forgot {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .social-network {
+            margin-top: 20px;
+        }
+
+        .social-network a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            color: #191919;
+            font-size: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-network a:hover {
+            background: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <form method="post">
+            {% csrf_token %}
+            <h1>Connexion</h1>
+            <p class="text-muted">Veuillez entrer vos informations pour vous connecter</p>
+            <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <input type="submit" value="Se connecter">
+            <a href="#" class="forgot">Mot de passe oublié ?</a>
+        </form>
+        <div class="social-network">
+            <a href="#" class="icoFacebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="icoTwitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icoGoogle" title="Google"><i class="fab fa-google"></i></a>
         </div>
     </div>
-</div>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-  </body>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
 </html>
