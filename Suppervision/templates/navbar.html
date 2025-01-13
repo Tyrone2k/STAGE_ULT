@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}"> 
+    <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <meta name="theme-color" content="#7952b3">
+    <title>Rénovation Immobilière</title>
+</head>
+<body>  
+    <header class="site-header sticky-top bg-light shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand" href="" aria-label="Logo">
+              <img src="{% static 'images/logo.jpg' %}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+            </a>
+      
+            <!-- Toggler for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+      
+            <!-- Menu Items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#designs">Designs</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="services">Services</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                  <a class="btn btn-outline-primary ms-md-2" href="signin">S'inscrire</a>
+                </li>
+                <li class="nav-item">
+                  <a class="btn btn-primary ms-md-2" href="login">Se Connecter</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </header>
+</body>
+</html>
