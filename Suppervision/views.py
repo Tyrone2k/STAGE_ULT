@@ -12,7 +12,8 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 def login(request):
     return render(request,'login.html')
 
-
+def galerie(request):
+    return render(request,'galerie.html')
 
 
 def home_view(request):
@@ -52,12 +53,7 @@ def signin(request):
 def is_customer(user):
     return user.groups.filter(name='CLIENT').exists()
 
-# def afterlogin_view(request):
-#     if is_customer(request.user):
-#         return redirect('client-home')
-#     else:
-#         return redirect('home')
-    
+
     
 @login_required(login_url='login')
 @user_passes_test(is_customer)
@@ -79,3 +75,18 @@ def client_home_view(request):
 
 def services(request):
     return render(request,'services.html')
+
+def designs(request):
+    return render(request,'designs.html')
+
+def contact(request):
+    return render(request,'contact.html')
+
+
+
+
+# ----------------------------------------------------------------
+# ------- A D M I N   D A S H B O A R D --------------------------
+# ----------------------------------------------------------------
+
+def adminbase (request):

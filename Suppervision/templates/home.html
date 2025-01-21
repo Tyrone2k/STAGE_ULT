@@ -1,9 +1,8 @@
+{% extends "homebase.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% load widget_tweaks %}
+
+{% block content %}
     <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
@@ -71,44 +70,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
     </style>
-</head>
-<body>
-  <header class="site-header sticky-top bg-light shadow-sm">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="" aria-label="Logo">
-          <img src="{% static 'images/logo.jpg' %}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-        </a>
-  
-        <!-- Toggler for Mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-  
-        <!-- Menu Items -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="#designs">Designs</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="services">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact">Contact</a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-outline-primary ms-md-2" href="signin">S'inscrire</a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-primary ms-md-2" href="login">Se Connecter</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
+
+
 <!-- Hero Section -->
 <section class="hero-section">
     <h1 class="display-3 fw-bold">Rénovation Immobilière</h1>
@@ -127,11 +90,12 @@
         <h3 class="mt-3">Design Intérieur</h3>
         <p>Créez un espace chaleureux et fonctionnel avec des designs modernes adaptés à vos besoins.</p>
       </div>
-        <div class="col-md-6">
-            <div class="feature-image" style="background-image: url('{% static "images/salon2.JPG" %}');"></div>
-            <h3 class="mt-3">Design Extérieur</h3>
-            <p>Rendez votre maison magnifique avec notre expertise en rénovation et aménagement extérieur.</p>
-        </div>
+
+      <div class="col-md-6">
+        <div class="feature-image" style="background-image: url('{% static "images/salon2.JPG" %}');"></div>
+        <h3 class="mt-3">Design Extérieur</h3>
+        <p>Rendez votre maison magnifique avec notre expertise en rénovation et aménagement extérieur.</p>
+      </div>
     </div>
 </section>
 
@@ -141,17 +105,17 @@
         <h2 class="text-center mb-4">Nos Services</h2>
         <div class="row g-4">
             <div class="col-md-4 text-center">
-                <img src="{% static 'images/furniture.svg' %}" alt="Intérieur" width="80">
+                <img src="{% static 'images/renova.JPG' %}" alt="Intérieur" width="80">
                 <h4 class="my-3">Rénovation Intérieure</h4>
                 <p>Peinture, carrelage, mobilier et plus encore, pour un intérieur parfait.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="{% static 'images/garden.svg' %}" alt="Extérieur" width="80">
+                <img src="{% static 'images/restobar1.png' %}" alt="Extérieur" width="80">
                 <h4 class="my-3">Aménagement Extérieur</h4>
                 <p>Jardins, terrasses et façades pour embellir vos espaces extérieurs.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="{% static 'images/consulting.svg' %}" alt="Consulting" width="80">
+                <img src="{% static 'images/fastfood1.JPG' %}" alt="Consulting" width="80">
                 <h4 class="my-3">Consultation et Planification</h4>
                 <p>Des plans personnalisés adaptés à vos projets de rénovation.</p>
             </div>
@@ -180,39 +144,4 @@
         <button type="submit" class="btn btn-primary">Envoyer</button>
     </form>
 </section>
-
-<!-- Footer -->
-<footer class="container py-5">
-    <div class="row">
-     
-        <div class="col-12 col-md">
-            <img src="{% static 'images/logo.svg' %}" alt="Logo" width="50">
-            <small class="d-block mb-3 text-muted">&copy; 2024 Rénovation Immobilière</small>
-        </div>
-        <div class="col-6 col-md">
-            <h5>Liens Rapides</h5>
-            <ul class="list-unstyled text-small">
-                <li><a href="#">Accueil</a></li>
-                <li><a href="#designs">Designs</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            
-        </div>
-        <div class="col-6 col-md">
-            <h5>Contact</h5>
-            <ul class="list-unstyled text-small">
-                <li><a href="#">Email: gastephane@gmail.com</a></li>
-                <li><a href="#">Téléphone: +257 62 15 23 03</a></li>
-                <li><a href="#">Adresse: 60 av. de la  mission, Bujumbura, BURUNDI</a></li>
-            </ul>
-        </div>
-    </div>
-</footer>
-
-<script>
-    // Ajoutez ici des scripts si nécessaires
-</script>
-
-</body>
-</html>
+{% endblock content %}

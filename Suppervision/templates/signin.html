@@ -1,185 +1,184 @@
+{% extends "homebase.html" %}
 {% load static %}
+{% load widget_tweaks %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>sign up</title>
-
-
-
-
-    <style media="screen">
-      body {
+{% block content %}
+<style>
+    body {
         margin: 0;
         padding: 0;
         font-family: sans-serif;
-        background: linear-gradient(to right, #b92b27, #1565c0)
-      }
+        background: linear-gradient(to right, #e10f07, #1565c0, #610487);
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 2s ease-in-out;
+    }
 
-             
+    .box {
+        width: 400px;
+        padding: 40px;
+        background: #191919;
+        text-align: center;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        margin: auto;
+    }
 
-      .box {
+    .box h1 {
+        color: white;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
 
-         width: 500px;
-         padding: 40px;
-         position: absolute;
-         top: 50%;
-           left: 50%;
-           background: #191919;
-           text-align: center;
-           transition: 0.25s;
-           margin-top: 100px
-          }
+    .box p {
+        color: white;
+        margin-bottom: 20px;
+    }
 
-.box input[type="text"],
-.box input[type="password"] {
-border: 0;
-background: none;
-display: block;
-margin: 20px auto;
-text-align: center;
-border: 2px solid #3498db;
-padding: 10px 10px;
-width: 250px;
-outline: none;
-color: white;
-border-radius: 24px;
-transition: 0.25s
-}
+    .box input[type="text"],
+    .box input[type="password"],
+    .box input[type="file"] {
+        border: 0;
+        background: none;
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+        border: 2px solid #3498db;
+        padding: 10px 10px;
+        width: 80%;
+        outline: none;
+        color: white;
+        border-radius: 24px;
+        transition: 0.25s;
+    }
 
-.box h1 {
-color: white;
-text-transform: uppercase;
-font-weight: 500
-}
+    .box input[type="text"]:focus,
+    .box input[type="password"]:focus,
+    .box input[type="file"]:focus {
+        width: 90%;
+        border-color: #2ecc71;
+    }
 
-.box input[type="text"]:focus,
-.box input[type="password"]:focus {
-width: 300px;
-border-color: #2ecc71
-}
+    .box input[type="submit"] {
+        border: 0;
+        background: none;
+        display: block;
+        margin: 20px auto;
+        text-align: center;
+        border: 2px solid #2ecc71;
+        padding: 10px 30px;
+        outline: none;
+        color: white;
+        border-radius: 24px;
+        transition: 0.25s;
+        cursor: pointer;
+    }
 
-.box input[type="submit"] {
-border: 0;
-background: none;
-display: block;
-margin: 20px auto;
-text-align: center;
-border: 2px solid #2ecc71;
-padding: 14px 40px;
-outline: none;
-color: white;
-border-radius: 24px;
-transition: 0.25s;
-cursor: pointer
-}
+    .box input[type="submit"]:hover {
+        background: #2ecc71;
+    }
 
-.box input[type="submit"]:hover {
-background: #2ecc71
-}
+    .forgot {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        display: block;
+        margin-top: 10px;
+    }
 
-.forgot {
-text-decoration: underline
-}
+    .forgot:hover {
+        text-decoration: underline;
+    }
 
-ul.social-network {
-list-style: none;
-display: inline;
-margin-left: 0 !important;
-padding: 0
-}
+    .social-network {
+        margin-top: 20px;
+    }
 
-ul.social-network li {
-display: inline;
-margin: 0 5px
-}
+    .social-network a {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        margin: 0 10px;
+        background: #121212;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        color: #edecec;
+        font-size: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
 
-.social-network a.icoFacebook:hover {
-background-color: #3B5998
-}
+    .social-network a:hover {
+        background: #3498db;
+        color: rgb(252, 248, 248);
+    }
 
-.social-network a.icoTwitter:hover {
-background-color: #33ccff
-}
+    @media (max-width: 768px) {
+        .box {
+            width: 90%;
+            padding: 30px;
+        }
 
-.social-network a.icoGoogle:hover {
-background-color: #BD3518
-}
+        .box h1 {
+            font-size: 20px;
+        }
 
-.social-network a.icoFacebook:hover i,
-.social-network a.icoTwitter:hover i,
-.social-network a.icoGoogle:hover i {
-color: #fff
-}
+        .box input[type="text"],
+        .box input[type="password"],
+        .box input[type="file"] {
+            width: 100%;
+            margin: 10px auto;
+        }
+    }
 
-a.socialIcon:hover,
-.socialHoverClass {
-color: #44BCDD
-}
+    @media (max-width: 480px) {
+        .box {
+            width: 90%;
+            padding: 20px;
+        }
 
-.social-circle li a {
-display: inline-block;
-position: relative;
-margin: 0 auto 0 auto;
-border-radius: 50%;
-text-align: center;
-width: 50px;
-height: 50px;
-font-size: 20px
-}
+        .box h1 {
+            font-size: 18px;
+        }
 
-.social-circle li i {
-margin: 0;
-line-height: 50px;
-text-align: center
-}
+        .box input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+        }
 
-.social-circle li a:hover i,
-.triggeredHover {
-transform: rotate(360deg);
-transition: all 0.2s
-}
+        .social-network a {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+    }
+</style>
+<br>
+<div class="box">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Inscription</h1>
+        <p class="text-muted">Veuillez remplir les informations pour créer un compte</p>
 
-.social-circle i {
-color: #fff;
-transition: all 0.8s;
-transition: all 0.8s
-}
+        {{ userForm.first_name|add_class:"form-control"|attr:"placeholder:Prénom" }}
+        {{ userForm.last_name|add_class:"form-control"|attr:"placeholder:Nom" }}
+        {{ userForm.username|add_class:"form-control"|attr:"placeholder:Nom d'utilisateur" }}
+        {{ userForm.password|add_class:"form-control"|attr:"placeholder:Mot de passe" }}
+        {{ customerForm.address|add_class:"form-control"|attr:"placeholder:Adresse" }}
+        {{ customerForm.mobile|add_class:"form-control"|attr:"placeholder:Numéro de téléphone" }}
+        {{ customerForm.profile_pic|add_class:"form-control"|attr:"placeholder:Photo de profil" }}
 
+        <input type="submit" value="Créer un compte">
 
-  
-    </style>
-    <link href="signin.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <form class="box" method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
-                    <h1>INSCRIPTION DU CLIENT</h1>
-                    <p class="text-muted"> Entre les détails s'il vous plait !</p>
-                      {% render userForm.first_name class="form-control" placeholder="First Name" %}
-                        {% render userForm.last_name class="form-control" placeholder="Last Name" %}
-                          {% render userForm.username class="form-control" placeholder="Username" %}
-                            {% render userForm.password class="form-control" placeholder="Password" %}
-                              {% render customerForm.address class="form-control" placeholder="Address" %}
-                                {% render customerForm.mobile class="form-control" placeholder="Mobile" %}
-                                  {% render customerForm.profile_pic class="form-control" placeholder="Profile pic" %}
-                  
-                     <input type="submit" name="" value="Create">
+    </form>
 
-                </form>
-            </div>
-        </div>
+    <div class="social-network">
+        <a href="https://www.facebook.com" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.google.com" target="_blank" title="Google"><i class="fab fa-google"></i></a>
     </div>
-</div>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br>
-  </body>
-</html>
+</div>  <br>
+{% endblock content %}
