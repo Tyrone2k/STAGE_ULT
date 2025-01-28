@@ -1,0 +1,61 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+<title>Tableau de Bord Admin</title>
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Tableau de Bord Administrateur</h1>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                    <h4>Gestion des Utilisateurs</h4>
+                    <p>Approuvez ou rejetez les comptes des clients et du personnel.</p>
+                    <a href="{% url 'approve_user' %}" class="btn btn-primary">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                    <h4>Statistiques</h4>
+                    <p>Suivez les activités des projets et des commandes.</p>
+                    <a href="{% url 'statistics' %}" class="btn btn-success">Voir les Statistiques</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes fa-3x mb-3 text-warning"></i>
+                    <h4>Gestion des Stocks</h4>
+                    <p>Surveillez et gérez les stocks des matériaux.</p>
+                    <a href="{% url 'manage_stock' %}" class="btn btn-warning">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-danger"></i>
+                    <h4>Suivi des Paiements</h4>
+                    <p>Gérez les paiements et les budgets des projets.</p>
+                    <a href="{% url 'manage_payments' %}" class="btn btn-danger">Voir les Paiements</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

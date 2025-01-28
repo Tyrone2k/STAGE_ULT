@@ -170,6 +170,11 @@
         {{ customerForm.address|add_class:"form-control"|attr:"placeholder:Adresse" }}
         {{ customerForm.mobile|add_class:"form-control"|attr:"placeholder:Numéro de téléphone" }}
         {{ customerForm.profile_pic|add_class:"form-control"|attr:"placeholder:Photo de profil" }}
+        {{ userForm.username.errors }}
+        {{ userForm.password.errors }}
+        {{ customerForm.address.errors }}
+        {{ customerForm.mobile.errors }}
+        {{ customerForm.profile_pic.errors }}
 
         <input type="submit" value="Créer un compte">
 

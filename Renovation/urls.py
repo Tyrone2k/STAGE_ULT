@@ -21,6 +21,5 @@ urlpatterns = [
 
     path('', views.home_view, name='home'),
     path('admin/', admin.site.urls),
-    path('', include('suppervision.urls'))
-
+    path('', include('suppervision.urls')),
 ]
