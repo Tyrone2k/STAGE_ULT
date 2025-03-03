@@ -1,15 +1,31 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'dist/js/bootstrap.bundle.min.js' %}" defer></script>
     <link href="{% static 'fontawesome/css/all.min.css' %}" rel="stylesheet">
-    <title>{% block title %} renovation immobillière {%endblock%}</title>
+    <title>{% block title %} rénovation immobilière {%endblock%}</title>
 
     {%block css%}
+    <style>
+        .card {    
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
 
-    {%endblock%}
+    </style>
+    {%endblock css%}
 </head>
 <body>
     {% include "navbar.html" %}

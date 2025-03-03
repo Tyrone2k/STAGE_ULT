@@ -1,0 +1,15 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Notifications</h1>
+    <ul class="list-group">
+        {% for notification in notifications %}
+        <li class="list-group-item">{{ notification.message }} - {{ notification.created_at|date:"j M Y H:i" }}</li>
+        {% empty %}
+        <li class="list-group-item">Aucune notification pour le moment.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

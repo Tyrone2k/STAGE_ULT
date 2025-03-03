@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Détails de la Commande</h1>
+    <div class="card shadow">
+        <div class="card-body">
+            <h4 class="card-title">Commande #{{ commande.id }}</h4>
+            <p><strong>Créée par:</strong> {{ commande.created_by.user.username }}</p>
+            <p><strong>Catégorie:</strong> {{ commande.category.nom }}</p>
+            <p><strong>Budget:</strong> {{ commande.budget }} BIF</p>
+            <p><strong>Latitude:</strong> {{ commande.latitude }}</p>
+            <p><strong>Longitude:</strong> {{ commande.longitude }}</p>
+            <p><strong>Date de création:</strong> {{ commande.created_at|date:"j M Y H:i" }}</p>
+            <a href="{% url 'edit_commande' commande_id=commande.id %}" class="btn btn-warning">Modifier</a>
+            <a href="{% url 'add_produit_commande' commande_id=commande.id %}" class="btn btn-primary">Ajouter un Produit</a>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h2>Produits Associés</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix</th>
+                    <th>Design</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produit_commande in commande.produitcommande_set.all %}
+                <tr>
+                    <td>{{ produit_commande.produit.nom }}</td>
+                    <td>{{ produit_commande.quantite }}</td>
+                    <td>{{ produit_commande.prix }} BIF</td>
+                    <td>{{ produit_commande.design.nom }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Aucun produit associé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

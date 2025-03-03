@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-d&py)!xe=fnm#bpl9$g1+hor)%2an)!iy*4ilfmt8bja$*+k+@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['locahost','127.0.0.1','192.168.127.245']
 
 
 # Application definition
@@ -131,4 +131,13 @@ STATICFILES_DIRS = [BASE_DIR / "suppervision"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'suppervision/media')
+
+LOGIN_REDIRECT_URL='/after-login/'
+
+LOGOUT_REDIRECT_URL = '/'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

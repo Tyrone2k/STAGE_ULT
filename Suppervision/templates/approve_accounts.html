@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Approuver les comptes</title>
-</head>
-<body>
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
     <h1>Approuver les comptes</h1>
-    <table>
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Nom d'utilisateur</th>
+                <th>Nom</th>
                 <th>Email</th>
                 <th>Groupe</th>
                 <th>Action</th>
@@ -19,18 +17,19 @@
         <tbody>
             {% for user in pending_users %}
             <tr>
-                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.groups.first.name }}</td>
+                <td>{{ user.groups.first.name|default:"Pas de groupe" }}</td>
                 <td>
                     <form method="post" action="{% url 'approve_user' user.id %}">
                         {% csrf_token %}
-                        <button type="submit">Approuver</button>
+                        <button type="submit" name="action" value="approve" class="btn btn-success">Accepter</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Refuser</button>
                     </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+</div>
+{% endblock %}

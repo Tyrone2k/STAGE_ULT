@@ -1,0 +1,84 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+
+<div class="container my-5">
+    <header class="text-center mb-4">
+        <h1><strong>{{ design.nom }}</strong></h1>
+        {% if design.image %}
+            <img src="{{ design.image.url }}" alt="{{ design.nom }}" class="img-fluid rounded" style="max-height: 200px;" />
+        {% endif %}
+    </header>
+
+    <div class="row">
+        <!-- Filtres -->
+        <div class="col-md-3">
+            <h3>Filtres</h3>
+            <form method="get" class="mb-4">
+                <div class="form-group mb-3">
+                    <label for="category_produit">Catégorie Produit</label>
+                    <select name="category_produit" id="category_produit" class="form-control">
+                        <option value="">Toutes</option>
+                        {% for cat in categories_produit %}
+                        <option value="{{ cat.id }}" {% if request.GET.category_produit == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="category_design">Catégorie Design</label>
+                    <select name="category_design" id="category_design" class="form-control">
+                        <option value="">Toutes</option>
+                        {% for cat in categories_design %}
+                        <option value="{{ cat.id }}" {% if request.GET.category_produit|add:"0" == cat.id %} selected{% endif %}>{{ cat.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+            </form>
+        </div>
+
+        <!-- Liste des produits -->
+        <div class="col-md-9">
+            <form method="post" action="{% url 'commande' %}">
+                {% csrf_token %}
+                <input type="hidden" name="design_id" value="{{ design.id }}">
+                <input type="hidden" name="category_design" value="{{ request.GET.category_design }}">
+                <div class="row g-4">
+                    {% for produit in produits %}
+                    <div class="col-md-4">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ produit.nom }}</h5>
+                                <p class="card-text">
+                                    Catégorie: {{ produit.type.nom }}<br>
+                                    Prix: {{ produit.prix }} {{ produit.unite }}
+                                </p>
+                                <div class="form-group mb-2">
+                                    <input type="checkbox" name="produits" value="{{ produit.id }}" class="form-check-input">
+                                    <label class="form-check-label">Ajouter</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantite_{{ produit.id }}">Quantité:</label>
+                                    <input type="number" name="quantites" id="quantite_{{ produit.id }}" step="0.1" min="0" class="form-control" placeholder="Saisir la quantité">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted">Aucun produit disponible pour ce design avec les filtres actuels.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">ENVOYER</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

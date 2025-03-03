@@ -1,6 +1,5 @@
 {% extends "homebase.html" %}
 {% load static %}
-{% load widget_tweaks %}
 
 {% block content %}
 <style>
@@ -177,7 +176,12 @@
         <input type="password" name="password" id="password" placeholder="Mot de passe" required>
     
         <input type="submit" value="Se connecter">
+
+        <div class="text-center mt-3 text-muted">
+            Vous n'avez pas de compte ? <a href="{% url 'signin' %}">Inscrivez-vous</a>
+        </div>
     </form>
+
     
     <div class="social-network">
         <a href="https://www.facebook.com" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>

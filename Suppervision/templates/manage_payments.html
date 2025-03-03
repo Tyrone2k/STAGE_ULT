@@ -1,0 +1,31 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Suivi des Paiements</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Commande</th>
+                <th>Type de Paiement</th>
+                <th>Montant</th>
+                <th>Date de Paiement</th>
+                <th>Utilisateur</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paiement in paiements %}
+            <tr>
+                <td>{{ paiement.commande }}</td>
+                <td>{{ paiement.type_paiement }}</td>
+                <td>{{ paiement.montant }} BIF</td>
+                <td>{{ paiement.created_at|date:"j M Y H:i" }}</td>
+                <td>{{ paiement.created_by.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

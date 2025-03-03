@@ -2,6 +2,7 @@
 {% load static %}
 {% load widget_tweaks %}
 
+
 {% block content %}
 <style>
     body {
@@ -12,7 +13,6 @@
         height: 100vh;
         justify-content: center;
         align-items: center;
-        animation: fadeIn 2s ease-in-out;
     }
 
     .box {
@@ -38,6 +38,8 @@
     }
 
     .box input[type="text"],
+    .box input[type="number"],
+    .box input[type="email"],
     .box input[type="password"],
     .box input[type="file"] {
         border: 0;
@@ -55,6 +57,8 @@
     }
 
     .box input[type="text"]:focus,
+    .box input[type="number"]:focus,
+    .box input[type="email"]:focus,
     .box input[type="password"]:focus,
     .box input[type="file"]:focus {
         width: 90%;
@@ -127,6 +131,8 @@
         }
 
         .box input[type="text"],
+        .box input[type="number"],
+        .box input[type="email"],
         .box input[type="password"],
         .box input[type="file"] {
             width: 100%;
@@ -161,22 +167,53 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h1>Inscription</h1>
+        {% if messages %}
+           {% for message in messages %}
+              <p class="{% if message.tags %} {{ message.tags }} {% endif %}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
         <p class="text-muted">Veuillez remplir les informations pour créer un compte</p>
 
         {{ userForm.first_name|add_class:"form-control"|attr:"placeholder:Prénom" }}
         {{ userForm.last_name|add_class:"form-control"|attr:"placeholder:Nom" }}
         {{ userForm.username|add_class:"form-control"|attr:"placeholder:Nom d'utilisateur" }}
+        {{ userForm.email|add_class:"form-control"|attr:"placeholder:Email" }}
         {{ userForm.password|add_class:"form-control"|attr:"placeholder:Mot de passe" }}
-        {{ customerForm.address|add_class:"form-control"|attr:"placeholder:Adresse" }}
-        {{ customerForm.mobile|add_class:"form-control"|attr:"placeholder:Numéro de téléphone" }}
-        {{ customerForm.profile_pic|add_class:"form-control"|attr:"placeholder:Photo de profil" }}
-        {{ userForm.username.errors }}
-        {{ userForm.password.errors }}
-        {{ customerForm.address.errors }}
-        {{ customerForm.mobile.errors }}
-        {{ customerForm.profile_pic.errors }}
+        {{ clientForm.age|add_class:"form-control"|attr:"placeholder:Âge" }}  <!-- Ajout du champ âge -->
+        {{ clientForm.address|add_class:"form-control"|attr:"placeholder:Adresse" }}
+        {{ clientForm.mobile|add_class:"form-control"|attr:"placeholder:Numéro de téléphone" }}
+        {{ clientForm.profile_pic|add_class:"form-control"|attr:"placeholder:Photo de profil" }}
+        
+        {% for error in userForm.first_name.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in userForm.last_name.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in userForm.username.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in userForm.email.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in userForm.password.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in clientForm.age.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in clientForm.address.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in clientForm.mobile.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
+        {% for error in clientForm.profile_pic.errors %}
+            <p class="text-danger">{{ error }}</p>
+        {% endfor %}
 
-        <input type="submit" value="Créer un compte">
+        <input type="submit" value="Créer">
 
     </form>
 

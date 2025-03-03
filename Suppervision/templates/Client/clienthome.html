@@ -1,0 +1,101 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="icon" href="{% static 'favicon.ico' %}">
+<script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+<meta name="theme-color" content="#7952b3">
+<title>Tableau de Bord Client</title>
+
+
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Tableau de Bord Client</h1>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <!-- Card 1: Mon Profil -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-user fa-3x mb-3 text-info"></i>
+                    <h4>Mon Profil</h4>
+                    <p>Bienvenue, {{ user.last_name }} {{ user.first_name }} !</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <a href="{% url 'view_profile' %}" class="btn btn-info">Voir mon profil</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Card 4: Galérie -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-images fa-3x mb-3 text-warning"></i>
+                    <h4>Galérie</h4>
+                    <p>Explorez nos designs intérieurs et extérieurs.</p>
+                    <a href="{% url 'client_galerie' %}" class="btn btn-warning">Voir la galérie</a>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <!-- Card 3: Passer une Commande -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-plus-circle fa-3x mb-3 text-primary"></i>
+                    <h4>Passer une Commande</h4>
+                    <p>Commencez à passer une nouvelle demande de rénovation.</p>
+                    <a href="{% url 'commande' %}" class="btn btn-primary">Passer une Commande</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Card 2: Mes Commandes -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-bag fa-3x mb-3 text-success"></i>
+                    <h4>Mes Commandes</h4>
+                    <p>Voir toutes vos commandes passées et leur status.</p>
+                    <a href="{% url 'client_orders' %}" class="btn btn-success">Voir mes commandes</a>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <!-- Card 5: Paiement -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-credit-card fa-3x mb-3 text-danger"></i>
+                    <h4>Paiements</h4>
+                    <p>Consultez votre historique de paiements.</p>
+                    <a href="#" class="btn btn-danger">Voir mes paiements</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Card 6: Panier -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-3x mb-3 text-success"></i>
+                    <h4>Panier</h4>
+                    <p>Voir les articles dans votre panier.</p>
+                    <a href="{% url 'panier' %}" class="btn btn-success">Voir mon panier</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

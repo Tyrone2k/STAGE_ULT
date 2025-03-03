@@ -1,5 +1,7 @@
 from typing import Any
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.db.models.query import QuerySet
 from .models import *
 
@@ -9,11 +11,13 @@ admin.site.site_header='RENOVATION IMMOBILIERE'
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = "user","age"
+    list_display = "user", "age", "address", "mobile", "profile_pic"
+
+
 
 @admin.register(Design)
 class DesignAdmin(admin.ModelAdmin):
-    list_display =  "nom","image"
+    list_display =  "nom", "image", "description"
 
 @admin.register(CategoryDesign)
 class CategoryDesignAdmin(admin.ModelAdmin):
@@ -66,10 +70,18 @@ class ListeAttenteAdmin(admin.ModelAdmin):
 
 @admin.register(SuppervisionTravaux)
 class SuppervisionTravauxAdmin(admin.ModelAdmin):
-    list_display = "client", "budget1", "description"
+    list_display = "client", "budget1", "description", "image"
 
 
 @admin.register(RenovationFaite)
 class RenovationFaiteAdmin(admin.ModelAdmin):
-    list_display = "client", "budget2", "description"
-# Register your models here.
+    list_display = "client", "budget2", "description", "image", "done"
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = "name", "email", "message", "created_at"
+
+
+
+

@@ -1,0 +1,41 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Gestion des Stocks</h1>
+    <a href="{% url 'add_stock' %}" class="btn btn-primary mb-3">Ajouter du Stock</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité Initiale</th>
+                <th>Quantité Actuelle</th>
+                <th>Prix</th>
+                <th>Fournisseur</th>
+                <th>Date d'Ajout</th>
+                <th>Délai d'Expiration</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.produit.nom }}</td>
+                <td>{{ stock.quantite_initiale }}</td>
+                <td>{{ stock.quantite_actuelle }}</td>
+                <td>{{ stock.prix }} BIF</td>
+                <td>{{ stock.fournisseur.user.username }}</td>
+                <td>{{ stock.created_at|date:"j M Y" }}</td>
+                <td>{{ stock.delais_expiration|default:"N/A" }} jours</td>
+                <td>
+                    <a href="{% url 'edit_stock' stock.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                    <a href="{% url 'delete_stock' stock.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

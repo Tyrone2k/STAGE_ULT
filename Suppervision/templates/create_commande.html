@@ -1,0 +1,15 @@
+{% extends "homebase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Créer une Commande</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Créer</button>
+        <a href="{% url 'services' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

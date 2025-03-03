@@ -1,11 +1,14 @@
-{% extends "adminbase.html" %}
+{% extends "superviseurbase.html" %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="icon" href="{% static 'favicon.ico' %}">
 <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
 <title>Tableau de Bord Superviseur</title>
+
 
 <div class="container my-5">
     <h1 class="text-center mb-4">Tableau de Bord Superviseur</h1>
@@ -17,7 +20,7 @@
                     <i class="fas fa-tasks fa-3x mb-3 text-info"></i>
                     <h4>Supervision des Travaux</h4>
                     <p>Attribuez et supervisez les travaux en cours.</p>
-                    <a href="{% url 'supervise_work' %}" class="btn btn-info">Superviser</a>
+                    <a href="{% url 'liste_attente' %}" class="btn btn-info">Superviser</a>
                 </div>
             </div>
         </div>
@@ -28,7 +31,7 @@
                     <i class="fas fa-folder-open fa-3x mb-3 text-success"></i>
                     <h4>Projets en Cours</h4>
                     <p>Consultez et gérez les projets actuels des clients.</p>
-                    <a href="{% url 'ongoing_projects' %}" class="btn btn-success">Voir les Projets</a>
+                    <a href="{% url 'manage_liste_attente' %}" class="btn btn-success">Voir les Projets</a>
                 </div>
             </div>
         </div>
@@ -41,7 +44,7 @@
                     <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
                     <h4>Validation des Travaux</h4>
                     <p>Validez les étapes terminées et finalisez les projets.</p>
-                    <a href="{% url 'validate_work' %}" class="btn btn-primary">Valider</a>
+                    <a href="{% url 'liste_renovation' %}" class="btn btn-primary">Valider</a>
                 </div>
             </div>
         </div>
@@ -52,7 +55,7 @@
                     <i class="fas fa-comments fa-3x mb-3 text-warning"></i>
                     <h4>Feedback des Clients</h4>
                     <p>Consultez les retours et ajustez les travaux en conséquence.</p>
-                    <a href="{% url 'client_feedback' %}" class="btn btn-warning">Voir les Feedbacks</a>
+                    <a href="" class="btn btn-warning">Voir les Feedbacks</a>
                 </div>
             </div>
         </div>

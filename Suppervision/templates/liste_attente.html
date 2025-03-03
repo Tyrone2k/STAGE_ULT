@@ -1,0 +1,43 @@
+{% extends "superviseurbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Liste d'Attente</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Créé par</th>
+                <th>Client</th>
+                <th>Date de Création</th>
+                <th>État</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in liste_attentes %}
+            <tr>
+                <td>{{ entry.id }}</td>
+                <td>{{ entry.created_by.username }}</td>
+                <td>{{ entry.client.user.username }}</td>
+                <td>{{ entry.created_at|date:"j M Y H:i" }}</td>
+                <td>{% if entry.done %}Terminé{% else %}En Attente{% endif %}</td>
+                <td>
+                    <a href="{% url 'liste_attente_detail' liste_attente_id=entry.id %}" class="btn btn-info btn-sm">Détails</a>
+                    {% if not entry.done %}
+                    <a href="{% url 'confirm_mark_done' liste_attente_id=entry.id %}" class="btn btn-success btn-sm">Marquer comme Terminé</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucune entrée dans la liste d'attente.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'manage_liste_attente' %}" class="btn btn-primary">Ajouter à la Liste d'Attente</a>
+</div>
+{% endblock %}

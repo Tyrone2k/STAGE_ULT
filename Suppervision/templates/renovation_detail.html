@@ -1,0 +1,20 @@
+{% extends "superviseurbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Détails de la Rénovation</h1>
+    <div class="card shadow">
+        <div class="card-body">
+            <h4 class="card-title">Rénovation pour {{ renovation.client.user.username }}</h4>
+            <p><strong>Description:</strong> {{ renovation.description }}</p>
+            <p><strong>Budget:</strong> {{ renovation.budget2.montant }} BIF</p>
+            <p>
+                <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="btn btn-success">
+                    Marquer comme Terminé
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

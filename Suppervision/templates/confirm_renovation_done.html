@@ -1,0 +1,14 @@
+{% extends "superviseurbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Confirmer la Fin des Travaux</h1>
+    <p>Êtes-vous sûr de vouloir marquer ces travaux de rénovation comme terminés ?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmer</button>
+        <a href="{% url 'renovation_detail' renovation_id=renovation.id %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

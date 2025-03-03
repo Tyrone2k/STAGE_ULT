@@ -1,0 +1,23 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Design Extérieur</h1>
+    <div class="row">
+        {% for design in designs %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img src="{{ design.image.url }}" class="card-img-top" alt="{{ design.nom }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ design.nom }}</h5>
+                    <p class="card-text">{{ design.description|default:"Pas de description" }}</p>
+                    <a href="{% url 'commande' %}" class="btn btn-primary">Choisir ce Design</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

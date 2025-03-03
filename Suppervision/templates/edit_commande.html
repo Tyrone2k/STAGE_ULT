@@ -1,0 +1,23 @@
+{% extends "homebase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Modifier la Commande</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input type="text" class="form-control" id="latitude" value="{{ commande.latitude }}" readonly>
+        </div>
+        <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input type="text" class="form-control" id="longitude" value="{{ commande.longitude }}" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{% url 'commande_detail' commande_id=commande.id %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

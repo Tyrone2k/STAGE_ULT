@@ -1,12 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Client(models.Model):
     id = models.AutoField(primary_key=True)
     age = models.PositiveIntegerField()
     user = models.OneToOneField(User,null=True, on_delete=models.CASCADE)
-    profile_pic= models.ImageField(upload_to='profile_pic/CustomerProfilePic/',null=True,blank=True)
+    profile_pic= models.ImageField(upload_to='profile_pic/',null=True,blank=True)
     address = models.CharField(max_length=40, null=True)
     mobile = models.CharField(max_length=20,null=True)
     @property
@@ -16,16 +18,29 @@ class Client(models.Model):
     def get_id(self):
         return self.user.id
 
+    @property
+    def get_email_field_name(self):
+        return self.user.email
+
+
     def __str__(self) :
         return f"{self.user.username}"
+    
+
+@receiver(post_save, sender=User)
+def add_user_approved_field(sender, instance, created, **kwargs):
+    if created:
+        pass
+   
     
 class Design(models.Model):
     id = models.AutoField(primary_key=True)
     nom = models.CharField(max_length=50)
+    description = models.CharField(max_length=300,null=True)
     image= models.ImageField(upload_to='design_image/',null=True,blank=True)   
 
     def __str__(self) :
-        return f"{self.nom}"
+        return f"{self.nom} : {self.description}"
     
 class CategoryDesign(models.Model):
     id = models.AutoField(primary_key=True)
@@ -101,17 +116,17 @@ class ProduitCommande(models.Model):
     id = models.BigAutoField(primary_key=True)
     produit = models.ForeignKey(Produit, on_delete=models.PROTECT)
     commande = models.ForeignKey(Commande, null=True, on_delete=models.SET_NULL)
-    design = models.ForeignKey(CategoryDesign, null=True, on_delete=models.CASCADE)
-    quantite = models.FloatField(editable=False,default=0)
-    prix = models.FloatField(editable=False,default=0)
+    design = models.ForeignKey(Design, null=True, on_delete=models.CASCADE)  # Lien avec Design au lieu de CategoryDesign
+    category_design = models.ForeignKey(CategoryDesign, null=True, on_delete=models.CASCADE)  # Filtre pour CategoryDesign
+    quantite = models.FloatField(editable=False, default=0)
+    prix = models.FloatField(editable=False, default=0)
 
-    def __str__(self) :
+    def __str__(self):
         return f"{self.commande.created_by.user.username} {self.quantite} {self.produit.unite} de {self.produit}"
-    
+
     class Meta:
         verbose_name = "Panier"
         verbose_name_plural = "Panier"
-
  
 class Paiement(models.Model):
     id = models.AutoField(primary_key=True)
@@ -132,26 +147,36 @@ class ListeAttente(models.Model):
     done = models.BooleanField(default=False, editable=False)
 
     def __str__(self) :
-        return f"Le client {self.client} a été enregristré par {self.created_by} sur la liste d'attente"
+        return f"Le client {self.client} a été enregristré par {self.created_by} sur la liste d'attente # {self.id}"
     
 class SuppervisionTravaux(models.Model):
     id = models.AutoField(primary_key=True)
     client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
     budget1 = models.ForeignKey(Paiement, on_delete=models.PROTECT)
-    #image = 
+    image = models.ImageField(upload_to='travaux_en_cours/',null=True,blank=True)
     description = models.CharField(max_length=500,null=True) 
 
 
     def __str__(self) :
-        return f"La description des travaux du client {self.client} a été faite"
+        return f"La description des travaux du client {self.client} est en cours"
     
 class RenovationFaite(models.Model):
     id = models.AutoField(primary_key=True)
     client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
     budget2 = models.ForeignKey(Paiement,  on_delete=models.PROTECT)  
-    #image = 
+    image = models.ImageField(upload_to='fin_travaux/',null=True,blank=True)
     description = models.CharField(max_length=500,null=True)  
+    done = models.BooleanField(default=False)
 
     def __str__(self) :
-        return f"La description des fins de travaux du client {self.client} a été validé"
+        return f"La description des fins de travaux du client {self.client} a été faite {self.done}"
+
+class Contact(models.Model):
+    name = models.CharField(max_length=30)
+    email = models.EmailField()
+    message = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"Message de {self.name} ({self.email})"    
 # Create your models here.

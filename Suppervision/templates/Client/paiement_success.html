@@ -1,0 +1,10 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Paiement Réussi</h1>
+    <p class="text-center">Votre paiement pour {{ type_paiement }} a été effectué avec succès.</p>
+    <a href="{% url 'client-home' %}" class="btn btn-primary">Retour à l'accueil</a>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "superviseurbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Ajouter à la Liste d'Attente</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+        <a href="{% url 'liste_attente' %}" class="btn btn-secondary">Voir la Liste</a> <!-- Ajout d'un lien pour voir la liste -->
+    </form>
+</div>
+{% endblock %}

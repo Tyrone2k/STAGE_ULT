@@ -1,4 +1,4 @@
-{% extends "homebase.html" %}
+{% extends "Client/clientbase.html" %}
 {% load static %}
 {% load widget_tweaks %}
 
@@ -83,11 +83,12 @@
     <div class="gallery-container">
         {% for design in designs %}
         <div class="gallery-item">
-            <img src="{{ design.image.url }}" class="gallery-image" alt="{{ design.nom }}">
+            <img src="{% if design.image %}{{ design.image.url }}{% else %}{% static 'images/renova.JPG' %}{% endif %}" 
+                 class="gallery-image" alt="{{ design.nom }}">
             <div class="gallery-content">
                 <h3 class="gallery-title">{{ design.nom }}</h3>
                 <p class="gallery-description">{{ design.description }}</p>
-                <a href="{% url 'login' %}" class="gallery-btn">Voir plus</a>
+                <a href="{% url 'ajout_produits' design.id %}" class="gallery-btn">Choisir ce design</a>
             </div>
         </div>
         {% endfor %}

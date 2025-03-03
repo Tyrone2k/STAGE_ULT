@@ -1,0 +1,57 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Statistiques</h1>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Nombre de Clients</h4>
+                    <p class="card-text display-4">{{ nombre_clients }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Nombre de Commandes</h4>
+                    <p class="card-text display-4">{{ nombre_commandes }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Total des Ventes</h4>
+                    <p class="card-text display-4">{{ total_ventes }} BIF</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique ou tableau pour les données plus détaillées -->
+    <div class="mt-4">
+        <h2>Analyse des Ventes par Catégorie de Design</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Catégorie de Design</th>
+                    <th>Total des Ventes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat, total in ventes_par_categorie.items %}
+                <tr>
+                    <td>{{ cat.nom }}</td>
+                    <td>{{ total }} BIF</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

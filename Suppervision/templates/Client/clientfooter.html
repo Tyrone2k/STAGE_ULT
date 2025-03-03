@@ -26,11 +26,12 @@
         <div class="col-6 col-md">
             <h5>Liens Rapides</h5>
             <ul class="list-unstyled text-small">
-                <li><a href="/">Accueil</a></li>
-                <li><a href="{% url 'designs' %}">Designs</a></li>
-                <li><a href="{% url 'services' %}">Services</a></li>
-                <li><a href="{% url 'contact' %}">Contact</a></li>
-                <li><a href="{% url 'login' %}">Se Connecter</a></li>
+                <li><a href="/client-home">Accueil</a></li>
+                <li><a href="#" class="text-primary">Galerie</a></li>
+                <li><a href="{% url 'commande' %}" class="text-primary">Passer une Commande</a></li>
+                <li><a href="{% url 'view_profile' %}" class="text-primary">Mon Profil</a></li>
+                <li><a href="#" class="text-primary">Notifications</a></li>
+                <li><a href="">Se Déconnecter</a></li>
             </ul>
         </div>
         <div class="col-6 col-md">

@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rénovation immobilière/Admin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>rénovation immobilière/Superviseur</title>
     <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'dist/css/admin.css' %}">
     <link rel="icon" href="{% static 'favicon.ico' %}">
     <script src="{% static 'dist/js/bootstrap.bundle.min.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             display: flex;
@@ -69,19 +69,18 @@
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
-
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h4 class="text-center">ADMIN</h4>
+        <h4 class="text-center">SUPERVISEUR</h4>
         <nav class="nav flex-column">
-            <a class="nav-link" href="{% url 'admin_dashboard' %}">Accueille</a>
-            <a class="nav-link" href="{% url 'manage_accounts' %}">Comptes</a>
-            <a class="nav-link" href="{% url 'statistics' %}">Statistiques</a>
-            <a class="nav-link" href="{% url 'manage_stock' %}">Stocks</a>
-            <a class="nav-link" href="{% url 'manage_payments' %}">Paiements</a>
+            <a class="nav-link" href="{% url 'superviseur_dashboard' %}">Accueille</a>
+            <a class="nav-link" href="{% url 'liste_attente' %}">Supervision</a>
+            <a class="nav-link" href="{% url 'manage_liste_attente' %}">En Cours</a>
+            <a class="nav-link" href="{% url 'liste_renovation' %}">Validation</a>
+            <a class="nav-link" href="#">Feedback</a>
             <a class="nav-link" href="/admin">Paramètres</a>
             <a class="nav-link" href="/">Déconnexion</a>
         </nav>
@@ -92,7 +91,7 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                <a class="navbar-brand" href="{% url 'superviseur_dashboard' %}">Supervision</a>
             </div>
         </nav>
 
