@@ -93,7 +93,7 @@ class Stock(models.Model):
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT)
     quantite_initiale = models.FloatField(default=0)
     quantite_actuelle = models.FloatField(editable=False, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     delais_expiration = models.PositiveIntegerField(null=True, blank=True)
     prix = models.FloatField()
 
@@ -105,7 +105,7 @@ class Commande(models.Model):
     created_by = models.ForeignKey(Client, on_delete=models.PROTECT, null=True)
     category = models.ForeignKey(Design,null=True, on_delete=models.SET_NULL)
     budget = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     longitude = models.FloatField(default=0, editable=False)
     latitude = models.FloatField(default=0, editable=False)
 
@@ -132,7 +132,7 @@ class Paiement(models.Model):
     id = models.AutoField(primary_key=True)
     type_paiement = models.ForeignKey(TypePaiement,null=True, on_delete=models.PROTECT)
     montant = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
 
@@ -141,7 +141,7 @@ class Paiement(models.Model):
 
 class ListeAttente(models.Model):
     id = models.AutoField(primary_key=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
     client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
     done = models.BooleanField(default=False, editable=False)
@@ -152,6 +152,7 @@ class ListeAttente(models.Model):
 class SuppervisionTravaux(models.Model):
     id = models.AutoField(primary_key=True)
     client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     budget1 = models.ForeignKey(Paiement, on_delete=models.PROTECT)
     image = models.ImageField(upload_to='travaux_en_cours/',null=True,blank=True)
     description = models.CharField(max_length=500,null=True) 
@@ -163,6 +164,7 @@ class SuppervisionTravaux(models.Model):
 class RenovationFaite(models.Model):
     id = models.AutoField(primary_key=True)
     client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     budget2 = models.ForeignKey(Paiement,  on_delete=models.PROTECT)  
     image = models.ImageField(upload_to='fin_travaux/',null=True,blank=True)
     description = models.CharField(max_length=500,null=True)  
@@ -175,7 +177,7 @@ class Contact(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField()
     message = models.CharField(max_length=500)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def _str_(self):
         return f"Message de {self.name} ({self.email})"    

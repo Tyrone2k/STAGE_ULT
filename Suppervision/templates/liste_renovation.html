@@ -10,6 +10,7 @@
             <tr>
                 <th>ID</th>
                 <th>Client</th>
+                <th>Date </th>
                 <th>Description</th>
                 <th>Budget</th>
                 <th>Action</th>
@@ -20,6 +21,7 @@
             <tr>
                 <td>{{ renovation.id }}</td>
                 <td>{{ renovation.client.user.username }}</td>
+                <td><input type="text" class="form-control" value="{{ renovation.created_at|date:'j M Y H:i' }}" readonly></td>
                 <td>{{ renovation.description|truncatechars:50 }}</td>
                 <td>{{ renovation.budget2.montant }} BIF</td>
                 <td>

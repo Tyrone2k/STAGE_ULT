@@ -11,7 +11,6 @@
 <title>Tableau de Bord Client</title>
 
 
-
 <div class="container my-5">
     <h1 class="text-center mb-4">Tableau de Bord Client</h1>
 
@@ -22,8 +21,7 @@
                 <div class="card-body text-center">
                     <i class="fas fa-user fa-3x mb-3 text-info"></i>
                     <h4>Mon Profil</h4>
-                    <p>Bienvenue, {{ user.last_name }} {{ user.first_name }} !</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p>Bienvenue,<strong> {{ user.last_name }} {{ user.first_name }} </strong>!</p>
                     <a href="{% url 'view_profile' %}" class="btn btn-info">Voir mon profil</a>
                 </div>
             </div>

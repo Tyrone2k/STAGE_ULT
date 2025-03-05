@@ -45,12 +45,12 @@ class FournisseurAdmin(admin.ModelAdmin):
 @admin.register(Stock)
 class StockAdmin(admin.ModelAdmin):
     list_display = "created_by", "produit", "fournisseur", "quantite_initiale", "quantite_actuelle",
-    "delais_expiration", "prix" 
+    "created_at", "delais_expiration", "prix" 
 
 
 @admin.register(Commande)
 class CommandeAdmin(admin.ModelAdmin):
-    list_display = "created_by", "category", "budget"
+    list_display = "created_by", "created_at", "category", "budget"
 
 
 @admin.register(ProduitCommande)
@@ -60,22 +60,22 @@ class ProduitCommandeAdmin(admin.ModelAdmin):
 
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
-    list_display = "type_paiement", "montant", "created_by", "commande"
+    list_display = "type_paiement", "commande", "montant", "created_by", "created_at"
 
 
 @admin.register(ListeAttente)
 class ListeAttenteAdmin(admin.ModelAdmin):
-    list_display = "created_by", "client", "done"
+    list_display = "created_by", "client", "created_at", "done"
 
 
 @admin.register(SuppervisionTravaux)
 class SuppervisionTravauxAdmin(admin.ModelAdmin):
-    list_display = "client", "budget1", "description", "image"
+    list_display = "client", "created_at", "budget1", "description", "image"
 
 
 @admin.register(RenovationFaite)
 class RenovationFaiteAdmin(admin.ModelAdmin):
-    list_display = "client", "budget2", "description", "image", "done"
+    list_display = "client", "created_at", "budget2", "description", "image", "done"
 
 
 @admin.register(Contact)

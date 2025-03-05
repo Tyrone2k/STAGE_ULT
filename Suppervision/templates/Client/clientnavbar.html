@@ -118,6 +118,9 @@
                 <!-- Menu Items in the middle -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'client-home' %}">Accueil</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link" href="{% url 'client_galerie' %}" id="galerieMenu">Galérie</a>
                             <ul class="dropdown-menu" id="galerieSubmenu">
@@ -126,10 +129,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'commande' %}">Commande</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'client_orders' %}">Orders</a>
+                            <a class="nav-link" href="{% url 'client_orders' %}">Commandes</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link" href="#" id="paiementMenu">Paiement</a>
@@ -147,6 +147,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link" href="#" id="profileMenu">
                             <i class="fas fa-user-circle profile-icon"></i>
+                            <h6><strong> {{ user.last_name }} {{ user.first_name }} </strong></h6>
                         </a>
                         <ul class="dropdown-menu" id="profileSubmenu">
                             <li><a class="dropdown-item" href="{% url 'view_profile' %}">View profile</a></li>

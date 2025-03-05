@@ -87,9 +87,13 @@ class FournisseurForm(forms.ModelForm):
         }
 
 class StockForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = Stock
-        fields = ['produit', 'fournisseur', 'quantite_initiale', 'prix', 'delais_expiration']
+        fields = ['produit', 'fournisseur', 'quantite_initiale', 'prix',  'delais_expiration']
         widgets = {
             'produit': forms.Select(attrs={'class': 'form-control'}),
             'fournisseur': forms.Select(attrs={'class': 'form-control'}),
@@ -97,8 +101,16 @@ class StockForm(forms.ModelForm):
             'prix': forms.NumberInput(attrs={'class': 'form-control'}),
             'delais_expiration': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(StockForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
 class CommandeForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = Commande
         fields = ['created_by', 'category', 'budget']
@@ -107,6 +119,10 @@ class CommandeForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control'}),
             'budget': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(CommandeForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
 class ProduitCommandeForm(forms.ModelForm):
     class Meta:
@@ -119,6 +135,10 @@ class ProduitCommandeForm(forms.ModelForm):
         }
 
 class PaiementForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = Paiement
         fields = ['type_paiement', 'montant', 'created_by', 'commande']
@@ -128,8 +148,16 @@ class PaiementForm(forms.ModelForm):
             'created_by': forms.Select(attrs={'class': 'form-control'}),
             'commande': forms.Select(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(PaiementForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
 class ListeAttenteForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = ListeAttente
         fields = ['created_by', 'client']
@@ -137,8 +165,16 @@ class ListeAttenteForm(forms.ModelForm):
             'created_by': forms.Select(attrs={'class': 'form-control'}),
             'client': forms.Select(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(ListeAttenteForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
 class SuppervisionTravauxForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = SuppervisionTravaux
         fields = ['client', 'budget1', 'description', 'image']
@@ -148,8 +184,16 @@ class SuppervisionTravauxForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(SuppervisionTravauxForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
 class RenovationFaiteForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = RenovationFaite
         fields = ['client', 'budget2', 'description', 'image']
@@ -160,14 +204,17 @@ class RenovationFaiteForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'done': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(RenovationFaiteForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at
 
-
-class AddressForm(forms.Form):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    mobile = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    address = forms.CharField(max_length=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 class ContactForm(forms.ModelForm):
+    created_at = forms.DateTimeField(
+        required=False, 
+        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
     class Meta:
         model = Contact
         fields = ['name', 'email', 'message']
@@ -176,3 +223,7 @@ class ContactForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['created_at'].initial = self.instance.created_at

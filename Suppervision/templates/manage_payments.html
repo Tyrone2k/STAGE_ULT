@@ -21,7 +21,7 @@
                 <td>{{ paiement.commande }}</td>
                 <td>{{ paiement.type_paiement }}</td>
                 <td>{{ paiement.montant }} BIF</td>
-                <td>{{ paiement.created_at|date:"j M Y H:i" }}</td>
+                <td><input type="text" class="form-control" value="{{ paiement.created_at|date:'j M Y H:i' }}" readonly></td>
                 <td>{{ paiement.created_by.username }}</td>
             </tr>
             {% endfor %}
