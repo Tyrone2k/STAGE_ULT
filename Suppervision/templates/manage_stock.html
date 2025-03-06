@@ -27,7 +27,7 @@
                 <td>{{ stock.quantite_actuelle }}</td>
                 <td>{{ stock.prix }} BIF</td>
                 <td>{{ stock.fournisseur.user.username }}</td>
-                <td><input type="text" class="form-control" value="{{ stock.created_at|date:'j M Y H:i' }}" readonly></td>
+                <td>{{ stock.created_at|date:'j M Y H:i' }}</td>
                 <td>{{ stock.delais_expiration|default:"N/A" }} jours</td>
                 <td>
                     <a href="{% url 'edit_stock' stock.id %}" class="btn btn-warning btn-sm">Modifier</a>

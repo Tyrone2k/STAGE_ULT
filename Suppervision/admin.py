@@ -50,12 +50,12 @@ class StockAdmin(admin.ModelAdmin):
 
 @admin.register(Commande)
 class CommandeAdmin(admin.ModelAdmin):
-    list_display = "created_by", "created_at", "category", "budget"
+    list_display = "created_by", "created_at", "category", "longitude", "latitude"
 
 
 @admin.register(ProduitCommande)
 class ProduitCommandeAdmin(admin.ModelAdmin):
-    list_display = "commande", "produit", "design", "quantite", "prix"
+    list_display = "commande", "category_design", "design", "produit", "quantite", "prix"
 
 
 @admin.register(Paiement)

@@ -71,13 +71,46 @@
         .gallery-btn:hover {
             background: #000000;
         }
+        .search-container {
+            text-align: center;
+            margin: 20px auto;
+        }
 
+        .search-input {
+            width: 15%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .search-button {
+            padding: 10px 15px;
+            background: #1a008d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background: #000000;
+        }
         @media (max-width: 768px) {
             .gallery-item {
                 width: 100%;
             }
-        }
+        }   
     </style>
+
+    <!-- Moteur de recherche -->
+    <div class="search-container">
+        <form method="GET">
+            <input type="text" name="q" class="search-input" placeholder="Rechercher un design..." value="{{ request.GET.q }}">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> <!-- Icône Font Awesome -->
+            </button>
+        </form>
+    </div>
     
     <div class="gallery-container">
         {% for design in designs %}

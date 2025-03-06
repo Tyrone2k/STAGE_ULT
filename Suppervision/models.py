@@ -59,7 +59,7 @@ class CategoryProduit(models.Model):
 
 class TypePaiement(models.Model):
     id = models.AutoField(primary_key=True)
-    nom = models.CharField(max_length=30, null=True)   
+    nom = models.CharField(max_length=30, null=True)
 
     def __str__(self) :
         return f"{self.nom}"    
@@ -104,25 +104,24 @@ class Commande(models.Model):
     id = models.AutoField(primary_key=True)
     created_by = models.ForeignKey(Client, on_delete=models.PROTECT, null=True)
     category = models.ForeignKey(Design,null=True, on_delete=models.SET_NULL)
-    budget = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     longitude = models.FloatField(default=0, editable=False)
     latitude = models.FloatField(default=0, editable=False)
 
     def __str__(self) :
-        return f"Commande de {self.created_by.user.username} {self.category} valant {self.budget}"
+        return f"Commande de {self.created_by.user.username} {self.category}"
         
 class ProduitCommande(models.Model):
     id = models.BigAutoField(primary_key=True)
-    produit = models.ForeignKey(Produit, on_delete=models.PROTECT)
     commande = models.ForeignKey(Commande, null=True, on_delete=models.SET_NULL)
-    design = models.ForeignKey(Design, null=True, on_delete=models.CASCADE)  # Lien avec Design au lieu de CategoryDesign
+    produit = models.ForeignKey(Produit, on_delete=models.PROTECT)
     category_design = models.ForeignKey(CategoryDesign, null=True, on_delete=models.CASCADE)  # Filtre pour CategoryDesign
-    quantite = models.FloatField(editable=False, default=0)
-    prix = models.FloatField(editable=False, default=0)
+    design = models.ForeignKey(Design, null=True, on_delete=models.CASCADE)  # Lien avec Design au lieu de CategoryDesign
+    quantite = models.FloatField(default=0)
+    prix = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.commande.created_by.user.username} {self.quantite} {self.produit.unite} de {self.produit}"
+        return f"{self.commande.created_by.user.username}  {self.quantite} {self.produit.unite} de {self.produit}"
 
     class Meta:
         verbose_name = "Panier"
@@ -137,7 +136,7 @@ class Paiement(models.Model):
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
 
     def __str__(self) :
-        return f"Les frais de {self.type_paiement} de {self.montant} sur {self.commande} à {self.created_by}"
+        return f"Les frais de {self.type_paiement.nom} de {self.montant.prix} sur {self.commande} à {self.created_by}"
 
 class ListeAttente(models.Model):
     id = models.AutoField(primary_key=True)

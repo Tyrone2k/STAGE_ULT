@@ -10,7 +10,7 @@
             <h4 class="card-title">Entrée #{{ liste_attente.id }}</h4>
             <p><strong>Créée par:</strong> {{ liste_attente.created_by.username }}</p>
             <p><strong>Client:</strong> {{ liste_attente.client.user.username }}</p>
-            <p><strong>Date de création:</strong><input type="text" class="form-control" value="{{ client.created_at|date:'j M Y H:i' }}" readonly></p>
+            <p><strong>Date:</strong> {{ liste_attente.created_at|date:'j M Y H:i' }}</p>
             <p><strong>Terminée:</strong> {% if liste_attente.done %}Oui{% else %}Non{% endif %}</p>
             {% if not liste_attente.done %}
             <a href="{% url 'confirm_mark_done' liste_attente_id=liste_attente.id %}" class="btn btn-danger">Marquer comme Terminé</a>

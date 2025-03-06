@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.views import LogoutView
 from django.urls import path
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
@@ -173,8 +174,14 @@ def design_exterieur(request):
 @login_required(login_url='login')
 @user_passes_test(is_customer)
 def client_galerie(request):
-    designs = Design.objects.all()
-    return render(request, 'Client/client_galerie.html', {'designs': designs})
+    query = request.GET.get('q', '')  # Récupérer la valeur de la recherche
+    if query:
+        designs = Design.objects.filter(nom__icontains=query)  # Filtrer les designs par nom
+    else:
+        designs = Design.objects.all()
+    
+    return render(request, 'Client/client_galerie.html', {'designs': designs, 'query': query})
+
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
@@ -202,6 +209,10 @@ def ajout_produits(request, design_id):
     }
     return render(request, 'Client/ajout_produits.html', context)
 
+def filtrer_produits(request):
+    category_id = request.GET.get('category_id')
+    produits = Produit.objects.filter(category_produit_id=category_id).values('id', 'nom')
+    return JsonResponse(list(produits), safe=False)
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)

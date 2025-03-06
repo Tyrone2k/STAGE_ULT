@@ -113,11 +113,10 @@ class CommandeForm(forms.ModelForm):
     )
     class Meta:
         model = Commande
-        fields = ['created_by', 'category', 'budget']
+        fields = ['created_by', 'category']
         widgets = {
             'created_by': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
-            'budget': forms.NumberInput(attrs={'class': 'form-control'}),
         }
     def __init__(self, *args, **kwargs):
         super(CommandeForm, self).__init__(*args, **kwargs)
@@ -125,13 +124,31 @@ class CommandeForm(forms.ModelForm):
             self.fields['created_at'].initial = self.instance.created_at
 
 class ProduitCommandeForm(forms.ModelForm):
+    category_produit = forms.ModelChoiceField(
+        queryset=CategoryProduit.objects.all(),
+        required=False,
+        empty_label="Sélectionner une catégorie de produit"
+    )
+    produit = forms.ModelChoiceField(
+        queryset=Produit.objects.none(),  # Chargé dynamiquement via AJAX
+        required=False,
+        empty_label="Sélectionner un produit"
+    )
+    category_design = forms.ModelChoiceField(
+        queryset=CategoryDesign.objects.all(),
+        required=False,
+        empty_label="Sélectionner une catégorie de design"
+    )
+
     class Meta:
         model = ProduitCommande
-        fields = ['produit', 'commande', 'design']
+        fields = ['commande', 'category_design', 'design', 'produit', 'category_produit', 'quantite']
         widgets = {
-            'produit': forms.Select(attrs={'class': 'form-control'}),
             'commande': forms.Select(attrs={'class': 'form-control'}),
+            'category_design': forms.Select(attrs={'class': 'form-control'}),
             'design': forms.Select(attrs={'class': 'form-control'}),
+            'produit': forms.Select(attrs={'class': 'form-control'}),
+            'quantite': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 class PaiementForm(forms.ModelForm):

@@ -10,10 +10,9 @@
             <h4 class="card-title">Commande #{{ commande.id }}</h4>
             <p><strong>Créée par:</strong> {{ commande.created_by.user.username }}</p>
             <p><strong>Catégorie:</strong> {{ commande.category.nom }}</p>
-            <p><strong>Budget:</strong> {{ commande.budget }} BIF</p>
             <p><strong>Latitude:</strong> {{ commande.latitude }}</p>
             <p><strong>Longitude:</strong> {{ commande.longitude }}</p>
-            <p><strong>Date de création:</strong> {{ commande.created_at|date:"j M Y H:i" }}</p>
+            <p><strong>Date:</strong> {{ commande.created_at|date:"j M Y H:i" }}</p>
             <a href="{% url 'edit_commande' commande_id=commande.id %}" class="btn btn-warning">Modifier</a>
             <a href="{% url 'add_produit_commande' commande_id=commande.id %}" class="btn btn-primary">Ajouter un Produit</a>
         </div>

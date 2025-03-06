@@ -21,7 +21,7 @@
             <tr>
                 <td>{{ renovation.id }}</td>
                 <td>{{ renovation.client.user.username }}</td>
-                <td><input type="text" class="form-control" value="{{ renovation.created_at|date:'j M Y H:i' }}" readonly></td>
+                <td>{{ renovation.created_at|date:'j M Y H:i' }}</td>
                 <td>{{ renovation.description|truncatechars:50 }}</td>
                 <td>{{ renovation.budget2.montant }} BIF</td>
                 <td>
