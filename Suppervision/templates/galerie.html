@@ -1,6 +1,5 @@
 {% extends "homebase.html" %}
 {% load static %}
-{% load widget_tweaks %}
 
 {% block content %}
     <title>Galerie - Rénovation Immobilière</title>
@@ -71,6 +70,54 @@
         .gallery-btn:hover {
             background: #000000;
         }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+        }
+
+        .search-container form{
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 25px;
+            padding: 5px 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 25px;
+            background: none;
+        }
+
+        .search-button {
+            background: #f3f3f3;
+            color: rgb(111, 111, 111);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-button i {
+            font-size: 18px;
+        }
+
+        .search-button:hover {
+            background: #000000;
+        }
 
         @media (max-width: 768px) {
             .gallery-item {
@@ -79,6 +126,16 @@
         }
     </style>
     
+    <!-- Moteur de recherche -->
+    <div class="search-container">
+        <form method="GET">
+            <input type="text" name="q" class="search-input" placeholder="Rechercher un design..." value="{{ request.GET.q }}">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> <!-- Icône Font Awesome -->
+            </button>
+        </form>
+    </div>
+
     <div class="gallery-container">
         {% for design in designs %}
         <div class="gallery-item">

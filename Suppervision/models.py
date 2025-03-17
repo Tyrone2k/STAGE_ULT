@@ -92,13 +92,26 @@ class Stock(models.Model):
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT)
     quantite_initiale = models.FloatField(default=0)
-    quantite_actuelle = models.FloatField(editable=False, null=True)
+    quantite_actuelle = models.FloatField(default=0)  # Mise à jour automatique
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     delais_expiration = models.PositiveIntegerField(null=True, blank=True)
-    prix = models.FloatField()
+    prix = models.FloatField()  # Calculé automatiquement
 
-    def __str__(self) :
-        return f"{self.fournisseur.user.username} nous a founit {self.produit.nom} à {self.prix}"
+    def save(self, *args, **kwargs):
+        """ Mise à jour automatique du prix et de la quantité actuelle """
+        if self.pk:  # Si l'objet existe déjà
+            old_instance = Stock.objects.get(pk=self.pk)
+            self.quantite_actuelle = old_instance.quantite_actuelle + self.quantite_initiale
+        else:  # Si c'est un nouvel enregistrement
+            self.quantite_actuelle = self.quantite_initiale
+
+        # Calcul automatique du prix total
+        self.prix = self.produit.prix * self.quantite_actuelle
+
+        super(Stock, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.fournisseur.user.username} nous a fourni {self.produit.nom} ({self.quantite_actuelle} unités) à {self.prix}€"
     
 class Commande(models.Model):
     id = models.AutoField(primary_key=True)

@@ -24,7 +24,7 @@
                     <select name="category_produit" id="id_category_produit" class="form-control">
                         <option value="">Toutes</option>
                         {% for cat in categories_produit %}
-                        <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                        <option value="{{ cat.id }}" {% if category_produit_selected == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nom }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -33,7 +33,7 @@
                     <select name="category_design" id="id_category_design" class="form-control">
                         <option value="">Toutes</option>
                         {% for cat in categories_design %}
-                        <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                        <option value="{{ cat.id }}" {% if category_design_selected == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nom }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -41,22 +41,38 @@
             </form>
         </div>
 
-        <!-- Formulaire d'ajout de produit -->
+        <!-- Sélection des Produits -->
         <div class="col-md-9">
-            <form method="post" id="commande-form">
+            <form method="post" action="{% url 'commande' %}">
                 {% csrf_token %}
                 <input type="hidden" name="design_id" value="{{ design.id }}">
+                <input type="hidden" name="category_design" value="{{ category_design_selected|default:'' }}">
 
-                <label for="id_produit">Produit:</label>
-                <select id="id_produit" name="produit" class="form-control">
-                    <option value="">Sélectionner un produit</option>
-                </select>
-
-                <label for="id_quantite">Quantité:</label>
-                <input type="number" id="id_quantite" name="quantite" min="1" class="form-control" required>
-
+                <div class="row g-4">
+                    {% for produit in produits %}
+                    <div class="col-md-4">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ produit.nom }}</h5>
+                                <p class="card-text">
+                                    Catégorie: {{ produit.type.nom }}<br>
+                                    Prix: {{ produit.prix }} {{ produit.unite }}
+                                </p>
+                                <div class="form-check">
+                                    <input type="checkbox" name="produits" value="{{ produit.id }}" class="form-check-input">
+                                    <label class="form-check-label">Ajouter</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted">Aucun produit disponible pour ce design avec les filtres actuels.</p>
+                    </div>
+                    {% endfor %}
+                </div>
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg">ENVOYER</button>
+                    <button type="submit" class="btn btn-success btn-lg">Soumetter la Commande</button>
                 </div>
             </form>
         </div>
@@ -64,24 +80,38 @@
 </div>
 
 <script>
-    document.getElementById("id_category_produit").addEventListener("change", function () {
-        let categoryId = this.value;
-        let produitSelect = document.getElementById("id_produit");
-        produitSelect.innerHTML = '<option value="">Chargement...</option>';
-
-        fetch(`/filtrer_produits/?category_id=${categoryId}`)
+    function fetchAndDisplayProducts() {
+        let category_produit_id = document.getElementById("id_category_produit").value;
+        let category_design_id = document.getElementById("id_category_design").value;
+        fetch('/filtrer_produits/?category_produit_id=' + category_produit_id + '&category_design_id=' + category_design_id)
             .then(response => response.json())
             .then(data => {
-                produitSelect.innerHTML = '<option value="">Sélectionner un produit</option>';
+                let productListDiv = document.getElementById("product-list");
+                productListDiv.innerHTML = '';
                 data.forEach(produit => {
-                    let option = document.createElement("option");
-                    option.value = produit.id;
-                    option.textContent = produit.nom;
-                    produitSelect.appendChild(option);
+                    let div = document.createElement("div");
+                    div.classList.add("form-check");
+                    let input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.name = "produits";
+                    input.value = produit.id;
+                    let label = document.createElement("label");
+                    label.classList.add("form-check-label");
+                    label.htmlFor = `produit-${produit.id}`;
+                    label.textContent = produit.nom;
+                    div.appendChild(input);
+                    div.appendChild(label);
+                    productListDiv.appendChild(div);
                 });
             })
             .catch(error => console.error("Erreur:", error));
-    });
-</script>
+    }
 
+    document.getElementById("id_category_produit").addEventListener("change", fetchAndDisplayProducts);
+    document.getElementById("id_category_design").addEventListener("change", fetchAndDisplayProducts);
+
+    window.onload = function() {
+        fetchAndDisplayProducts();
+    };
+</script>
 {% endblock %}

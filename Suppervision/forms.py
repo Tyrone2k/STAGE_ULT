@@ -87,24 +87,15 @@ class FournisseurForm(forms.ModelForm):
         }
 
 class StockForm(forms.ModelForm):
-    created_at = forms.DateTimeField(
-        required=False, 
-        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
-    )
     class Meta:
         model = Stock
-        fields = ['produit', 'fournisseur', 'quantite_initiale', 'prix',  'delais_expiration']
+        fields = ['produit', 'fournisseur', 'quantite_initiale', 'delais_expiration']
         widgets = {
             'produit': forms.Select(attrs={'class': 'form-control'}),
             'fournisseur': forms.Select(attrs={'class': 'form-control'}),
             'quantite_initiale': forms.NumberInput(attrs={'class': 'form-control'}),
-            'prix': forms.NumberInput(attrs={'class': 'form-control'}),
             'delais_expiration': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-    def __init__(self, *args, **kwargs):
-        super(StockForm, self).__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
-            self.fields['created_at'].initial = self.instance.created_at
 
 class CommandeForm(forms.ModelForm):
     created_at = forms.DateTimeField(
@@ -130,7 +121,7 @@ class ProduitCommandeForm(forms.ModelForm):
         empty_label="Sélectionner une catégorie de produit"
     )
     produit = forms.ModelChoiceField(
-        queryset=Produit.objects.none(),  # Chargé dynamiquement via AJAX
+        queryset=Produit.objects.all(),
         required=False,
         empty_label="Sélectionner un produit"
     )
@@ -142,13 +133,12 @@ class ProduitCommandeForm(forms.ModelForm):
 
     class Meta:
         model = ProduitCommande
-        fields = ['commande', 'category_design', 'design', 'produit', 'category_produit', 'quantite']
+        fields = ['commande', 'design', 'category_design', 'produit']
         widgets = {
             'commande': forms.Select(attrs={'class': 'form-control'}),
-            'category_design': forms.Select(attrs={'class': 'form-control'}),
             'design': forms.Select(attrs={'class': 'form-control'}),
+            'category_design': forms.Select(attrs={'class': 'form-control'}),
             'produit': forms.Select(attrs={'class': 'form-control'}),
-            'quantite': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 class PaiementForm(forms.ModelForm):
@@ -171,10 +161,6 @@ class PaiementForm(forms.ModelForm):
             self.fields['created_at'].initial = self.instance.created_at
 
 class ListeAttenteForm(forms.ModelForm):
-    created_at = forms.DateTimeField(
-        required=False, 
-        widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
-    )
     class Meta:
         model = ListeAttente
         fields = ['created_by', 'client']
@@ -182,10 +168,6 @@ class ListeAttenteForm(forms.ModelForm):
             'created_by': forms.Select(attrs={'class': 'form-control'}),
             'client': forms.Select(attrs={'class': 'form-control'}),
         }
-    def __init__(self, *args, **kwargs):
-        super(ListeAttenteForm, self).__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
-            self.fields['created_at'].initial = self.instance.created_at
 
 class SuppervisionTravauxForm(forms.ModelForm):
     created_at = forms.DateTimeField(

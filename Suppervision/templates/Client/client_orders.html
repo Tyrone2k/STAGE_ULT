@@ -11,7 +11,7 @@
                 <th>Design</th>
                 <th>Produits</th>
                 <th>Date</th>
-                <th>Budget</th>
+                <th>Prix</th>
                 <th>Statut</th>
             </tr>
         </thead>
@@ -22,13 +22,18 @@
                 <td>{{ order.category.nom }}</td>
                 <td>
                     {% for produit in order.produitcommande_set.all %}
-                        {{ produit.produit.nom }} ({{ produit.quantite }} {{ produit.produit.unite }}),
+                    {{ produit.produit.type.nom }} {{ produit.produit.nom }}  ({{ produit.produit.unite }})
                     {% empty %}
                         Aucun produit
                     {% endfor %}
                 </td>
                 <td>{{ order.created_at|date:"j M Y" }}</td>
-                <td>{{ order.budget }}</td>
+                <td>
+                    {% for produit in order.produitcommande_set.all %}
+                    {{ produit.produit.prix }}
+                    {% empty %}
+                        Aucun produit
+                    {% endfor %}</td>
                 <td>En attente</td>
             </tr>
             {% empty %}

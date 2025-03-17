@@ -44,8 +44,7 @@ class FournisseurAdmin(admin.ModelAdmin):
 
 @admin.register(Stock)
 class StockAdmin(admin.ModelAdmin):
-    list_display = "created_by", "produit", "fournisseur", "quantite_initiale", "quantite_actuelle",
-    "created_at", "delais_expiration", "prix" 
+    list_display = "created_by", "produit", "fournisseur", "quantite_initiale", "quantite_actuelle", "created_at", "delais_expiration", "prix" 
 
 
 @admin.register(Commande)

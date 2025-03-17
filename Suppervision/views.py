@@ -7,7 +7,9 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
-from . import forms, models
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .models import*
 from .forms import*
 from django.db.models import Sum, Count
@@ -127,14 +129,16 @@ def home_view(request):
     return render(request, 'home.html')
 
 def galerie(request):
-    designs = Design.objects.all()
-    return render(request, 'galerie.html', {'designs': designs})
+    query = request.GET.get('q', '')  # Récupérer la valeur de la recherche
+    if query:
+        designs = Design.objects.filter(nom__icontains=query)  # Filtrer les designs par nom
+    else:
+        designs = Design.objects.all()
+    return render(request, 'galerie.html', {'designs': designs, 'query': query})
 
 def services(request):
     return render(request, 'services.html')
 
-def designs(request):
-    return render(request, 'designs.html')
 
 def contact(request):
     if request.method == 'POST':
@@ -171,92 +175,90 @@ def design_exterieur(request):
     designs = Design.objects.filter(category__nom="Extérieur")  # Supposons que vous avez une catégorie
     return render(request, 'Client/design_exterieur.html', {'designs': designs})
 
+
 @login_required(login_url='login')
 @user_passes_test(is_customer)
 def client_galerie(request):
-    query = request.GET.get('q', '')  # Récupérer la valeur de la recherche
-    if query:
-        designs = Design.objects.filter(nom__icontains=query)  # Filtrer les designs par nom
-    else:
-        designs = Design.objects.all()
-    
-    return render(request, 'Client/client_galerie.html', {'designs': designs, 'query': query})
-
+    designs = Design.objects.all()
+    return render(request, 'Client/client_galerie.html', {'designs': designs})
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
 def ajout_produits(request, design_id):
-    design = Design.objects.get(id=design_id)
+    design = get_object_or_404(Design, id=design_id)
     categories_produit = CategoryProduit.objects.all()
     categories_design = CategoryDesign.objects.all()
     
-    # Récupérer les produits associés au design via ProduitCommande
-    produits = Produit.objects.filter(produitcommande__design=design).distinct()
-
-    # Appliquer les filtres
+    # Filtrer les produits par catégorie de produit si sélectionnée
+    produits = Produit.objects.all()
     category_produit_id = request.GET.get('category_produit')
-    category_design_id = request.GET.get('category_design')
     if category_produit_id:
         produits = produits.filter(type_id=category_produit_id)
+    
+    # Filtrer par catégorie de design si sélectionnée (optionnel, basé sur le design)
+    category_design_id = request.GET.get('category_design')
     if category_design_id:
-        produits = produits.filter(produitcommande__category_design_id=category_design_id)
+        produits = produits.filter(produitcommande__category_design_id=category_design_id).distinct()
 
     context = {
         'design': design,
         'categories_produit': categories_produit,
         'categories_design': categories_design,
         'produits': produits,
+        'category_produit_selected': category_produit_id,
+        'category_design_selected': category_design_id,
     }
     return render(request, 'Client/ajout_produits.html', context)
 
-def filtrer_produits(request):
-    category_id = request.GET.get('category_id')
-    produits = Produit.objects.filter(category_produit_id=category_id).values('id', 'nom')
-    return JsonResponse(list(produits), safe=False)
+class FiltrerProduitsView(APIView):
+    def get(self, request):
+        category_produit_id = request.query_params.get('category_produit_id')
+        category_design_id = request.query_params.get('category_design_id')
+        produits = Produit.objects.all()
+        if category_produit_id:
+            produits = produits.filter(type_id=category_produit_id)
+        if category_design_id:
+            produits = produits.filter(produitcommande__category_design_id=category_design_id).distinct()
+        return Response(list(produits.values('id', 'nom')), status=status.HTTP_200_OK)
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
 def enregistrer_commande(request):
-    """
-    Enregistre une commande avec les produits sélectionnés et redirige vers client_orders.
-    """
     if request.method == 'POST':
         design_id = request.POST.get('design_id')
         produit_ids = request.POST.getlist('produits')
-        quantites = request.POST.getlist('quantites')
         category_design_id = request.POST.get('category_design')
         
         design = get_object_or_404(Design, id=design_id)
-        
+        category_design = get_object_or_404(CategoryDesign, id=category_design_id) if category_design_id else None
+
         # Créer une nouvelle commande
         commande = Commande.objects.create(
             created_by=request.user.client,
             category=design,
-            budget=0  # À ajuster selon votre logique
         )
 
-        # Ajouter les produits sélectionnés à la commande
+        # Ajouter les produits sélectionnés (quantité fixée à 1, pour le superviseur)
         total_budget = 0
-        for produit_id, quantite in zip(produit_ids, quantites):
+        for produit_id in produit_ids:
             produit = get_object_or_404(Produit, id=produit_id)
-            quantite = float(quantite) if quantite else 0
-            if quantite > 0:
-                prix = produit.prix * quantite
-                ProduitCommande.objects.create(
-                    produit=produit,
-                    commande=commande,
-                    design=design,
-                    category_design_id=category_design_id if category_design_id else None,
-                    quantite=quantite,
-                    prix=prix
-                )
-                total_budget += prix
-        
-        # Mise à jour du budget total de la commande
+            quantite = 1  # Quantité fixée à 1, modifiable par le superviseur
+            prix = produit.prix * quantite
+            ProduitCommande.objects.create(
+                produit=produit,
+                commande=commande,
+                design=design,
+                category_design=category_design,
+                quantite=quantite,
+                prix=prix
+            )
+            total_budget += prix
+
+        # Mise à jour du budget total
         commande.budget = total_budget
         commande.save()
-        
-        messages.success(request, "Commande enregistrée avec succès.")
+
+        messages.success(request, "Commande soumise avec succès. La quantité sera définie par le superviseur.")
         return redirect('client_orders')
     return redirect('client_galerie')
 
@@ -266,7 +268,6 @@ def client_orders(request):
     client = request.user.client
     orders = Commande.objects.filter(created_by=client).order_by('-created_at')
     return render(request, 'Client/client_orders.html', {'orders': orders})
-
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
@@ -450,7 +451,9 @@ def statistics(request):
 @user_passes_test(is_admin)
 def manage_stock(request):
     stocks = Stock.objects.all().order_by('-created_at')
-    context = {'stocks': stocks}
+    context = {
+        'stocks': stocks
+    }
     return render(request, 'manage_stock.html', context)
 
 @login_required(login_url='login')

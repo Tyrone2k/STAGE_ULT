@@ -3,7 +3,6 @@ from .views import*
 from django.contrib.auth.views import LoginView,LogoutView
 from django.views.generic import RedirectView
 from . import views
-from .views import filtrer_produits
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,7 +15,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(template_name='Client/logout.html'),name='logout'),
 
 
-    path('designs/', views.designs, name='designs'),
     path('services/', views.services, name='services'),
     path('galerie/', views.galerie, name='galerie'),
     path('contact/', views.contact, name='contact'),
@@ -28,7 +26,7 @@ urlpatterns = [
     path('client-home/commande/<int:design_id>/', views.ajout_produits, name='ajout_produits'),
     path('client-home/commande/enregistrer_commande/', views.enregistrer_commande, name='commande'),
     path('client-home/orders/', views.client_orders, name='client_orders'),
-    path('client-home/commande/filtrer_produits/', filtrer_produits, name='filtrer_produits'),
+    path('client-home/commande/filtrer_produits/', views.FiltrerProduitsView.as_view(), name='filtrer_produits'),
     path('client-home/paiement/<str:type_paiement>/', views.paiement, name='paiement'),
     path('client-home/paiement/visite-local/', views.visite_local, name='visite_local'),
     path('client-home/paiement/success/<str:type_paiement>/', views.paiement_success, name='paiement_success'),
