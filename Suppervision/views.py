@@ -4,6 +4,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponseRedirect
@@ -269,6 +271,36 @@ def client_orders(request):
     orders = Commande.objects.filter(created_by=client).order_by('-created_at')
     return render(request, 'Client/client_orders.html', {'orders': orders})
 
+@csrf_exempt
+def annuler_commande(request, order_id):
+    if request.method == "POST":
+        try:
+            commande = get_object_or_404(Commande, id=order_id)
+            commande.delete()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Méthode non autorisée"})
+
+@csrf_exempt
+def select_category(request, order_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            category = data.get("category")
+
+            # Récupérer la commande concernée
+            commande = Commande.objects.get(id=order_id)
+            commande.design_category = category  # Assurez-vous que votre modèle a ce champ
+            commande.save()
+
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Méthode non autorisée"})
+
 @login_required(login_url='login')
 @user_passes_test(is_customer)
 def visite_local(request):
@@ -276,18 +308,17 @@ def visite_local(request):
         montant = request.POST.get('montant')
         if montant:
             paiement = Paiement.objects.create(
-                type_paiement_id=1,  # Supposons un TypePaiement pour visite
+                type_paiement=TypePaiement.objects.get(nom='Visite du local'),
                 montant=montant,
                 created_by=request.user,
-                commande=None  # Peut être None si pas lié à une commande
+                commande=None
             )
-            # Ajouter à la liste d'attente
             ListeAttente.objects.create(
                 created_by=request.user,
                 client=request.user.client,
                 done=False
             )
-            return redirect('superviseur_dashboard')  # Rediriger vers la page du superviseur pour vérification
+            return redirect('superviseur_dashboard')
     return render(request, 'Client/visite_local.html')
 
 @login_required(login_url='login')
@@ -295,8 +326,14 @@ def visite_local(request):
 def panier(request):
     client = request.user.client
     cart_items = ProduitCommande.objects.filter(commande__isnull=True, created_by=client).order_by('id')
-    total_price = sum(item.prix for item in cart_items)
-    return render(request, 'Client/panier.html', {'cart_items': cart_items, 'total_price': total_price})
+    categories = {}
+    for item in cart_items:
+        cat = item.produit.category.nom
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append(item)
+    total_price = sum(item.produit.prix for item in cart_items)
+    return render(request, 'Client/panier.html', {'categories': categories, 'total_price': total_price})
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)

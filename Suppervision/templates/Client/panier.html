@@ -2,30 +2,67 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
-<div class="container my-5">
-    <h1 class="text-center mb-4">Mon Panier</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Design</th>
-                <th>Prix</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in panier_items %}
-            <tr>
-                <td>{{ item.design.nom }}</td>
-                <td>{{ item.prix }} BIF</td>
-                <td><a href="#" class="btn btn-danger">Supprimer</a></td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3">Votre panier est vide.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<style>
+    .cart-container {
+        max-width: 900px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    .cart-total {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: right;
+    }
+    .pay-button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        background: #007bff;
+        color: white;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 5px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    .pay-button:hover {
+        background: #0056b3;
+    }
+</style>
+
+<div class="cart-container">
+    <div class="cart-header">
+        <h2>Votre Panier</h2>
+    </div>
+    {% for category, produits in cart_items.items %}
+    <h3>{{ category.nom }}</h3>
+    {% for produit in produits %}
+    <div class="cart-item">
+        <span>{{ produit.produit.nom }} ({{ produit.produit.unite }})</span>
+        <span>{{ produit.produit.prix }} BIF</span>
+    </div>
+    {% endfor %}
+    {% empty %}
+    <p>Votre panier est vide.</p>
+    {% endfor %}
+    <div class="cart-total">Total : {{ total_price }} BIF</div>
+    <a href="{% url 'visite_local' %}" class="pay-button">Effectuer le paiement</a>
 </div>
 {% endblock %}

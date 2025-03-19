@@ -25,8 +25,12 @@ urlpatterns = [
     path('client-home/galerie/', views.client_galerie, name='client_galerie'),
     path('client-home/commande/<int:design_id>/', views.ajout_produits, name='ajout_produits'),
     path('client-home/commande/enregistrer_commande/', views.enregistrer_commande, name='commande'),
+    path("annuler-commande/<int:order_id>/", views.annuler_commande, name="annuler_commande"),
+    path('select-category/<int:order_id>/', views.select_category, name='select_category'),
     path('client-home/orders/', views.client_orders, name='client_orders'),
     path('client-home/commande/filtrer_produits/', views.FiltrerProduitsView.as_view(), name='filtrer_produits'),
+    path('client-home/client-orders/', views.client_orders, name='client_orders'),
+    path('client-home/panier/', views.panier, name='panier'),
     path('client-home/paiement/<str:type_paiement>/', views.paiement, name='paiement'),
     path('client-home/paiement/visite-local/', views.visite_local, name='visite_local'),
     path('client-home/paiement/success/<str:type_paiement>/', views.paiement_success, name='paiement_success'),
@@ -34,7 +38,6 @@ urlpatterns = [
     
     path('client-home/profile/', views.view_profile, name='view_profile'),
     path('client-home/profile/edit-profile/', views.edit_profile_view,name='edit_profile'),
-    path('client-home/profile/panier/', views.panier, name='panier'),
 
 
     path('admin-dashboard/', views.admindashboard, name='admin_dashboard'),

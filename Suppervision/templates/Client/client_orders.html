@@ -2,6 +2,46 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .cancel-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background-color: #f8f9fa;
+        color: #dc3545;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    }
+
+    .cancel-btn:hover {
+        background-color: #dc3545;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .design-btn {
+        padding: 5px 15px;
+        border: none;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-interieur { background-color: #007bff; color: white; }
+    .btn-exterieur { background-color: #28a745; color: white; }
+
+    .design-btn:hover {
+        opacity: 0.8;
+    }
+</style>
+
 <div class="container my-5">
     <h1 class="text-center mb-4">Mes Commandes</h1>
     <table class="table table-striped">
@@ -12,36 +52,133 @@
                 <th>Produits</th>
                 <th>Date</th>
                 <th>Prix</th>
-                <th>Statut</th>
+                <th>Annuler</th>
+                <th>Catégorie</th>
             </tr>
         </thead>
         <tbody>
             {% for order in orders %}
-            <tr>
+            <tr id="order-{{ order.id }}">
                 <td>{{ order.id }}</td>
                 <td>{{ order.category.nom }}</td>
                 <td>
                     {% for produit in order.produitcommande_set.all %}
-                    {{ produit.produit.type.nom }} {{ produit.produit.nom }}  ({{ produit.produit.unite }})
+                        {{ produit.produit.type.nom }} : {{ produit.produit.nom }} ({{ produit.produit.unite }})<br>
                     {% empty %}
                         Aucun produit
                     {% endfor %}
                 </td>
-                <td>{{ order.created_at|date:"j M Y" }}</td>
+                <td>{{ order.created_at|date:"j M Y H:i" }}</td>
                 <td>
                     {% for produit in order.produitcommande_set.all %}
-                    {{ produit.produit.prix }}
+                        {{ produit.produit.prix }}<br>
                     {% empty %}
                         Aucun produit
-                    {% endfor %}</td>
-                <td>En attente</td>
+                    {% endfor %}
+                </td>
+                <td>
+                    <button class="cancel-btn" data-order-id="{{ order.id }}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+                <td>
+                    <button class="design-btn btn-interieur" onclick="selectCategory('Interieur', {{ order.id }})">Intérieur</button>
+                    <button class="design-btn btn-exterieur" onclick="selectCategory('Exterieur', {{ order.id }})">Extérieur</button>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">Aucune commande pour le moment.</td>
+                <td colspan="7">Aucune commande pour le moment.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="text-center mt-4">
+        <a href="{% url 'visite_local' %}" class="btn btn-primary btn-lg">Payer et planifier une visite</a>
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".cancel-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let orderId = this.getAttribute("data-order-id");
+                let row = document.getElementById(`order-${orderId}`);
+
+                if (confirm("Voulez-vous vraiment annuler cette commande ?")) {
+                    fetch(`/annuler-commande/${orderId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": getCSRFToken(),
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            row.remove();  // Suppression immédiate dans le DOM
+                        } else {
+                            alert("Erreur : " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Erreur :", error));
+                }
+            });
+        });
+
+        // Fonction pour récupérer le token CSRF
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    });
+    
+    function selectCategory(category, orderId) {
+        fetch(`/ajouter-au-panier/${orderId}/?category=${category}`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = "/panier/";
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        })
+        .catch(error => console.error("Erreur :", error));
+    }
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function selectCategory(category, orderId, button) {
+        // Rendre l'autre bouton invisible
+        let parentTd = button.parentElement;
+        let otherButton = parentTd.querySelector(category === 'Interieur' ? '.btn-exterieur' : '.btn-interieur');
+        otherButton.style.display = 'none';
+
+        // Envoyer la sélection au serveur
+        fetch(`/select-category/${orderId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ category: category })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert("Erreur: " + data.error);
+                otherButton.style.display = ''; // Réafficher en cas d'erreur
+            }
+        })
+        .catch(error => console.error("Erreur :", error));
+    }
+</script>
+
 {% endblock %}

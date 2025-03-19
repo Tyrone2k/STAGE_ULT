@@ -1,17 +1,20 @@
-{% extends ""Client/clientbase.html" %}
+{% extends "Client/clientbase.html" %}
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
-    <h1 class="text-center mb-4">Paiement pour Visite du Local</h1>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="montant">Montant:</label>
-            <input type="number" name="montant" class="form-control" required>
+    <h1 class="text-center mb-4">Paiement pour la Visite du Local</h1>
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body text-center">
+            <h5 class="card-title">Montant à payer</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="number" class="form-control" name="montant" value="100000" readonly>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Payer</button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Payer</button>
-    </form>
+    </div>
 </div>
 {% endblock %}

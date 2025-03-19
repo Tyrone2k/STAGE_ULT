@@ -28,15 +28,6 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="category_design">Catégorie Design</label>
-                    <select name="category_design" id="id_category_design" class="form-control">
-                        <option value="">Toutes</option>
-                        {% for cat in categories_design %}
-                        <option value="{{ cat.id }}" {% if category_design_selected == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nom }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
                 <button type="submit" class="btn btn-primary w-100">Filtrer</button>
             </form>
         </div>
