@@ -44,54 +44,54 @@
 
     <div class="row g-4 mt-4">
         <div class="col-md-6">
-            <!-- Card 3: Passer une Commande -->
+            <!-- Card 3: Panier -->
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <i class="fas fa-plus-circle fa-3x mb-3 text-primary"></i>
-                    <h4>Passer une Commande</h4>
-                    <p>Commencez à passer une nouvelle demande de rénovation.</p>
-                    <a href="{% url 'commande' %}" class="btn btn-primary">Passer une Commande</a>
+                    <i class="fas fa-shopping-cart fa-3x mb-3 text-success"></i>
+                    <h4>Panier</h4>
+                    <p>Voir les articles dans votre panier.</p>
+                    <a href="{% url 'client_orders' %}" class="btn btn-success">Voir mon panier</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <!-- Card 2: Mes Commandes -->
+            <!-- Card 2: Paiement -->
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <i class="fas fa-shopping-bag fa-3x mb-3 text-success"></i>
-                    <h4>Mes Commandes</h4>
-                    <p>Voir toutes vos commandes passées et leur status.</p>
-                    <a href="{% url 'client_orders' %}" class="btn btn-success">Voir mes commandes</a>
+                    <i class="fas fa-credit-card fa-3x mb-3 text-danger"></i>
+                    <h4>Paiements</h4>
+                    <p>Consultez votre historique de paiements.</p>
+                    <a href="{% url 'paiement' %}" class="btn btn-danger">Voir mes paiements</a>
                 </div>
-            </div>
+            </div>            
         </div>
 
         
     </div>
     <div class="row g-4 mt-4">
         <div class="col-md-6">
-            <!-- Card 5: Paiement -->
+            <!-- Card 5: Mes Commandes -->
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <i class="fas fa-credit-card fa-3x mb-3 text-danger"></i>
-                    <h4>Paiements</h4>
-                    <p>Consultez votre historique de paiements.</p>
-                    <a href="#" class="btn btn-danger">Voir mes paiements</a>
+                    <i class="fas fa-shopping-bag fa-3x mb-3 text-success"></i>
+                    <h4>Mes Commandes</h4>
+                    <p>Voir toutes vos commandes passées et leur status.</p>
+                    <a href="#" class="btn btn-success">Voir mes commandes</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <!-- Card 6: Panier -->
+            <!-- Card 6: Fin des travaux -->
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <i class="fas fa-shopping-cart fa-3x mb-3 text-success"></i>
-                    <h4>Panier</h4>
-                    <p>Voir les articles dans votre panier.</p>
-                    <a href="{% url 'panier' %}" class="btn btn-success">Voir mon panier</a>
+                    <i class="fas fa-check-circle fa-3x mb-3 text-primary"></i>
+                    <h4>Mes Travaux</h4>
+                    <p>Visionnage des travaux effectués .</p>
+                    <a href="#" class="btn btn-primary">Voir mes travaux</a>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 </div>

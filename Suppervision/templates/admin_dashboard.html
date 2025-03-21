@@ -2,7 +2,6 @@
 {% load static %}
 {% load widget_tweaks %}
 
-
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
@@ -56,6 +55,30 @@
                     <h4>Suivi des Paiements</h4>
                     <p>Gérez les paiements et les budgets des projets.</p>
                     <a href="{% url 'manage_payments' %}" class="btn btn-danger">Voir les Paiements</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-cubes fa-3x mb-3 text-info"></i>
+                    <h4>Gestion des Produits</h4>
+                    <p>Ajoutez, modifiez ou supprimez des produits.</p>
+                    <a href="#" class="btn btn-info">Gérer les Produits</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-paint-brush fa-3x mb-3 text-secondary"></i>
+                    <h4>Gestion des Designs</h4>
+                    <p>Ajoutez ou supprimez des designs.</p>
+                    <a href="#" class="btn btn-secondary">Gérer les Designs</a>
                 </div>
             </div>
         </div>

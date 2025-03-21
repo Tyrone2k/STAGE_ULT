@@ -290,9 +290,8 @@ def select_category(request, order_id):
             data = json.loads(request.body)
             category = data.get("category")
 
-            # Récupérer la commande concernée
-            commande = Commande.objects.get(id=order_id)
-            commande.design_category = category  # Assurez-vous que votre modèle a ce champ
+            commande = get_object_or_404(Commande, id=order_id)
+            commande.category.nom = category
             commande.save()
 
             return JsonResponse({"success": True})
@@ -300,6 +299,7 @@ def select_category(request, order_id):
             return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Méthode non autorisée"})
+
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
@@ -311,7 +311,7 @@ def visite_local(request):
                 type_paiement=TypePaiement.objects.get(nom='Visite du local'),
                 montant=montant,
                 created_by=request.user,
-                commande=None
+                commande=True
             )
             ListeAttente.objects.create(
                 created_by=request.user,
@@ -325,10 +325,10 @@ def visite_local(request):
 @user_passes_test(is_customer)
 def panier(request):
     client = request.user.client
-    cart_items = ProduitCommande.objects.filter(commande__isnull=True, created_by=client).order_by('id')
+    cart_items = ProduitCommande.objects.filter(created_by=client).order_by('id')
     categories = {}
     for item in cart_items:
-        cat = item.produit.category.nom
+        cat = item.produit.nom
         if cat not in categories:
             categories[cat] = []
         categories[cat].append(item)
@@ -341,7 +341,7 @@ def paiement(request, type_paiement):
     try:
         type_paiement_obj = TypePaiement.objects.get(nom=type_paiement)
     except TypePaiement.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Type de paiement non trouvé.'})
+        return render(request, 'Client/error.html', {'message': 'Type de paiement non trouvé.'})
 
     if request.method == 'POST':
         form = PaiementForm(request.POST)

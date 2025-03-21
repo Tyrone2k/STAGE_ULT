@@ -11,23 +11,9 @@
         text-decoration: none;
     }
 
-    .note {
-        text-align: center;
-        height: 80px;
-        background: linear-gradient(to right, #0072ff, #8811c5);
-        color: #fff;
-        font-weight: bold;
-        line-height: 80px;
-    }
-
-    .form-content {
-        padding: 5%;
-        border: 1px solid #ced4da;
-        margin-bottom: 2%;
-    }
 
     .form-control {
-        border-radius: 1.5rem;
+        border-radius:0.5rem;
     }
 
     .btnSubmit {
@@ -51,15 +37,12 @@
             <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
-    <div class="form text-center">
-        <div class="note">
-            <p>EDIT PROFILE</p>
-        </div>
-        <div class="form-content">
+    <h1 class="text-center mb-4">Edit Profil</h1>
+        <div class=" card mx-auto text-center">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6"><br>
                       <div class="form-group">
                           {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
                       </div><br>
@@ -76,7 +59,7 @@
                             {% render_field clientForm.age class="form-control" placeholder="Age" %}
                         </div><br>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6"><br>
                       <div class="form-group">
                           {% render_field userForm.username class="form-control" placeholder="UserName" %}
                       </div><br>

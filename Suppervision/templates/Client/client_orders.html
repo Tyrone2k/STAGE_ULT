@@ -19,10 +19,18 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
+    .cancel-btn i {
+        transition: transform 0.3s ease-in-out;
+    }
+
     .cancel-btn:hover {
         background-color: #dc3545;
         color: white;
         transform: scale(1.1);
+    }
+
+    .cancel-btn:hover i {
+        transform: rotate(180deg);
     }
 
     .design-btn {
@@ -36,14 +44,38 @@
 
     .btn-interieur { background-color: #007bff; color: white; }
     .btn-exterieur { background-color: #28a745; color: white; }
-
+    
     .design-btn:hover {
         opacity: 0.8;
+    }
+    .pay-btn {
+        display: inline-block;
+        padding: 12px 40px;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: white;
+        background: linear-gradient(135deg, #007bff, #0056b3); /* Dégradé bleu */
+        border: none;
+        border-radius: 30px; /* Arrondi des bords */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre douce */
+        transition: all 0.3s ease-in-out;
+        text-decoration: none;
+    }
+    .pay-btn:hover {
+        background: linear-gradient(135deg, #0056b3, #003d80); /* Couleur plus foncée au hover */
+        transform: translateY(-3px); /* Effet de survol */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+    .pay-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 </style>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4">Mes Commandes</h1>
+    <h1 class="text-center mb-4">Mon Panier</h1>
+    
     <table class="table table-striped">
         <thead>
             <tr>
@@ -71,7 +103,7 @@
                 <td>{{ order.created_at|date:"j M Y H:i" }}</td>
                 <td>
                     {% for produit in order.produitcommande_set.all %}
-                        {{ produit.produit.prix }}<br>
+                        {{ produit.produit.prix }}BIF<br>
                     {% empty %}
                         Aucun produit
                     {% endfor %}
@@ -82,21 +114,26 @@
                     </button>
                 </td>
                 <td>
-                    <button class="design-btn btn-interieur" onclick="selectCategory('Interieur', {{ order.id }})">Intérieur</button>
-                    <button class="design-btn btn-exterieur" onclick="selectCategory('Exterieur', {{ order.id }})">Extérieur</button>
+                    <button class="design-btn btn-interieur" onclick="selectCategory('Interieur', {{ order.id }}, this)">Intérieur</button>
+                    <button class="design-btn btn-exterieur" onclick="selectCategory('Exterieur', {{ order.id }}, this)">Extérieur</button>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7">Aucune commande pour le moment.</td>
+                <td colspan="7" class="text-center">Aucune commande pour le moment.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
     <div class="text-center mt-4">
-        <a href="{% url 'visite_local' %}" class="btn btn-primary btn-lg">Payer et planifier une visite</a>
+        <a href="{% url 'visite_local' %}" class="pay-btn">Payer</a>
     </div>
+    
 </div>
+
+<!-- Formulaire invisible pour CSRF Token -->
+<form id="csrf-form">{% csrf_token %}</form>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -106,7 +143,7 @@
                 let row = document.getElementById(`order-${orderId}`);
 
                 if (confirm("Voulez-vous vraiment annuler cette commande ?")) {
-                    fetch(`/annuler-commande/${orderId}/`, {
+                    fetch(`/client-home/annuler-commande/${orderId}/`, {
                         method: "POST",
                         headers: {
                             "X-CSRFToken": getCSRFToken(),
@@ -131,41 +168,16 @@
             return document.querySelector('[name=csrfmiddlewaretoken]').value;
         }
     });
-    
-    function selectCategory(category, orderId) {
-        fetch(`/ajouter-au-panier/${orderId}/?category=${category}`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = "/panier/";
-            } else {
-                alert("Erreur : " + data.error);
-            }
-        })
-        .catch(error => console.error("Erreur :", error));
-    }
-
-    function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value;
-    }
 
     function selectCategory(category, orderId, button) {
-        // Rendre l'autre bouton invisible
         let parentTd = button.parentElement;
         let otherButton = parentTd.querySelector(category === 'Interieur' ? '.btn-exterieur' : '.btn-interieur');
         otherButton.style.display = 'none';
 
-        // Envoyer la sélection au serveur
-        fetch(`/select-category/${orderId}/`, {
+        fetch(`/client-home/select-category/${orderId}/`, {
             method: "POST",
             headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "X-CSRFToken": getCSRFToken(),
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ category: category })

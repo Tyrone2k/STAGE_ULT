@@ -6,9 +6,11 @@
 <style>
     .card {    
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 30px;
+        border-radius: 30px !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: none !important; 
         padding: 15px;
+        overflow: hidden; 
         text-align: center;
     }
     .card:hover {
@@ -21,7 +23,7 @@
 {% block content %}
 <div class="container my-5">
     <h1 class="text-center mb-4">Mon Profil</h1>
-    <div class="card text-center shadow-sm">
+    <div class="card text-center mx-auto">
         <div class="card-body">
             <h2 class="card-title">Informations Personnelles</h2>
             <p><strong>Nom:</strong> {{ client.user.last_name }} {{ client.user.first_name }}</p>
