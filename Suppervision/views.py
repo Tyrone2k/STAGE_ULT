@@ -154,9 +154,9 @@ def contact(request):
     return render(request, 'contact.html', {'form': form})
 
 
-# ----------------------------------------------------------------
-# ------- C L I E N T   D A S H B O A R D --------------------------
-# ----------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------
+# ------- C L I E N T   D A S H B O A R D -----------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------
 
 
 @login_required(login_url='login')
@@ -337,33 +337,8 @@ def panier(request):
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
-def paiement(request, type_paiement):
-    try:
-        type_paiement_obj = TypePaiement.objects.get(nom=type_paiement)
-    except TypePaiement.DoesNotExist:
-        return render(request, 'Client/error.html', {'message': 'Type de paiement non trouvé.'})
-
-    if request.method == 'POST':
-        form = PaiementForm(request.POST)
-        if form.is_valid():
-            paiement = form.save(commit=False)
-            paiement.type_paiement = type_paiement_obj
-            paiement.created_by = request.user
-            paiement.save()
-
-            # Logique spécifique pour la visite locale
-            if type_paiement == 'Visite du local':
-                ListeAttente.objects.create(
-                    created_by=request.user,
-                    client=request.user.client,
-                    done=False
-                )
-                return redirect('superviseur_dashboard')  # Rediriger vers la page du superviseur pour vérification
-
-            return redirect('paiement_success', type_paiement=type_paiement)
-    else:
-        form = PaiementForm(initial={'type_paiement': type_paiement_obj})
-    return render(request, 'Client/paiement.html', {'form': form, 'type_paiement': type_paiement})
+def paiement(request):
+    return render(request, 'Client/paiement.html')
 
 def paiement_success(request, type_paiement):
     return render(request, 'Client/paiement_success.html', {'type_paiement': type_paiement})
@@ -434,9 +409,9 @@ def edit_profile_view(request):
 #     return render(request, 'notifications.html', {'notifications': notifications})
 
 
-# ----------------------------------------------------------------
-# ------- A D M I N   D A S H B O A R D --------------------------
-# ----------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------
+# ------- A D M I N   D A S H B O A R D ------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)
@@ -472,7 +447,7 @@ def statistics(request):
     
     # Analyse des ventes par catégorie de design
     ventes_par_categorie = {}
-    for cat in CategoryDesign.objects.all():
+    for cat in Design.objects.all():
         total = ProduitCommande.objects.filter(design=cat).aggregate(Sum('prix'))['prix__sum'] or 0
         ventes_par_categorie[cat] = total
 
@@ -538,9 +513,74 @@ def manage_payments(request):
     context = {'paiements': paiements}
     return render(request, 'manage_payments.html', context)
 
-# ----------------------------------------------------------------
-# ------- S U P E R V I S E U R  D A S H B O A R D ---------------
-# ----------------------------------------------------------------
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def manage_produit(request):
+    return render(request, 'manage_produit.html')
+
+# Vue pour ajouter un produit via AJAX
+@csrf_exempt
+def add_produit(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        form = ProduitForm(request.POST, request.FILES)   
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Produit ajouté avec succès'})
+        return JsonResponse({'success': False, 'errors': form.errors})
+
+    form = ProduitForm()
+    categories = CategoryProduit.objects.all()
+    return render(request, 'add_produit.html', {'categories_produit': categories,'form': form})
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def filtrer_produit(request):
+    categories = CategoryProduit.objects.all()
+    produits = Produit.objects.all()
+    return render(request, 'filtrer_produit.html', {'categories_produit': categories, 'produits_all': produits})
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def edit_produit(request, produit_id):
+    produit = get_object_or_404(Produit, id=produit_id)
+
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        produit.nom = request.POST.get('nom')
+        produit.unite = request.POST.get('unite')
+        produit.prix = request.POST.get('prix')
+        produit.save()
+        return JsonResponse({'success': True, 'message': 'Produit mis à jour avec succès'})
+
+    return render(request, 'edit_produit.html', {'produit': produit})
+
+
+# Vue pour supprimer un produit via AJAX
+@csrf_exempt
+def delete_produit(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        produit_id = request.POST.get('produit_id')
+        produit = get_object_or_404(Produit, id=produit_id)
+        produit.delete()
+        return JsonResponse({'success': True, 'message': 'Produit supprimé avec succès'})
+    return JsonResponse({'success': False, 'message': 'Requête invalide'})
+
+
+# Vue pour charger les produits selon la catégorie sélectionnée (Utilisé dans AJAX)
+def get_products_by_category(request):
+    category_id = request.GET.get('category_id')
+    produits = Produit.objects.filter(type_id=category_id).values('id', 'nom') if category_id else []
+    return JsonResponse({'produits': list(produits)})
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def manage_design(request):
+    return render(request, 'manage_design.html')
+
+
+# -------------------------------------------------------------------------------------------------------------
+# ------- S U P E R V I S E U R  D A S H B O A R D ------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
 
 @login_required(login_url='login')
 @user_passes_test(is_supervisor)

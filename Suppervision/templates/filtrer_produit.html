@@ -1,0 +1,67 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Séléctionner un Produit</h1>
+    <div class="card mx-auto shadow p-4" style="max-width: 600px;">
+        <form method="post" action="{% url 'filtrer_produit' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="category_produit">Filtrer par Catégorie</label>
+                <select name="type" id="id_category_produit" class="form-control">
+                    <option value="">Toutes</option>
+                    {% for cat in categories_produit %}
+                    <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <div class="mb-3">
+                <label for="produit">Sélectionner un Produit</label>
+                <select name="produit" id="id_produit" class="form-control">
+                    <option value="">Toutes</option>
+                    {% for produit in produits_all %}
+                    <option value="{{ produit.id }}">{{ produit.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="text-center">
+                <button id="editBtn" type="submit" class="card-btn2" disabled>Modifier</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    // Filtrer les produits dynamiquement
+    $('#id_category_produit').change(function () {
+        let categoryId = $(this).val();
+
+        $.ajax({
+            url: "{% url 'get_products_by_category' %}",
+            type: "GET",
+            data: { category_id: categoryId },
+            success: function (data) {
+                $('#id_produit').empty().append('<option value="">Sélectionner un produit</option>');
+                $.each(data.produits, function (index, produit) {
+                    $('#id_produit').append(`<option value="${produit.id}">${produit.nom}</option>`);
+                });
+            }
+        });
+    });
+
+    // Activer/désactiver le bouton Modifier
+    $('#id_produit').change(function () {
+        let produitId = $(this).val();
+        if (produitId) {
+            $('#editBtn').removeClass('disabled').attr('href', `/admin-dashboard/manage-produit/edit_produit/${produitId}/`);
+        } else {
+            $('#editBtn').addClass('disabled').attr('href', "#");
+        }
+    });
+});
+</script>
+
+{% endblock %}

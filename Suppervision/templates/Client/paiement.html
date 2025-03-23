@@ -3,12 +3,41 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<style>
+    .card-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: white;
+        background: linear-gradient(135deg, #14f4ad, #013770); /* Dégradé bleu */
+        border: none;
+        border-radius: 30px; /* Arrondi des bords */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre douce */
+        transition: all 0.3s ease-in-out;
+        text-decoration: none;
+    }
+    .card-btn:hover {
+        background: linear-gradient(135deg, #000000, #003d80); /* Couleur plus foncée au hover */
+        transform: translateY(-3px); /* Effet de survol */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+    .card-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
 <div class="container my-5">
-    <h1 class="text-center mb-4">Options de Paiement</h1>
-    <ul class="list-group">
-        <li class="list-group-item"><a href="{% url 'visite_local' %}" class="btn btn-primary">Visite du Local</a></li>
-        <li class="list-group-item"><a href="#" class="btn btn-primary">Budget d'Avance</a></li>
-        <li class="list-group-item"><a href="#" class="btn btn-primary">Budget Final</a></li>
-    </ul>
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body text-center">
+            <h3 class="text-center mb-4">Options de Paiement</h3>
+            <div><a href="{% url 'visite_local' %}" class="card-btn">Visite du Local</a></div><br>
+            <div><a href="#" class="card-btn">Budget Avance</a></div><br>
+            <div><a href="#" class="card-btn">Budget Final</a></div><br>
+        </div>
+    </div>
+    
 </div>
 {% endblock %}

@@ -5,7 +5,7 @@ from django.views.generic import RedirectView
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import annuler_commande; select_category
+from .views import annuler_commande; select_category; get_products_by_category; add_produit; delete_produit
 
 
 urlpatterns = [
@@ -41,19 +41,23 @@ urlpatterns = [
 
 
     path('admin-dashboard/', views.admindashboard, name='admin_dashboard'),
-    path('manage-accounts/', views.manage_accounts, name='manage_accounts'),
-    path('approve-user/<int:user_id>/', views.approve_user, name='approve_user'),
+    path('admin-dashboard/manage-accounts/', views.manage_accounts, name='manage_accounts'),
+    path('admin-dashboard/approve-user/<int:user_id>/', views.approve_user, name='approve_user'),
     path('accounts/profile/', RedirectView.as_view(url='admin-dashboard/', permanent=False), name='profile-redirect'),
 
-
-    path('statistics/', views.statistics, name='statistics'),
-
-    path('manage-stock/', views.manage_stock, name='manage_stock'),
-    path('add-stock/', views.add_stock, name='add_stock'),
-    path('edit-stock/<int:user_id>/', views.edit_stock, name='edit_stock'),
-    path('delete-stock/<int:user_id>/', views.delete_stock, name='delete_stock'),
-
-    path('manage-payments/', views.manage_payments, name='manage_payments'),
+    path('admin-dashboard/statistics/', views.statistics, name='statistics'),
+    path('admin-dashboard/manage-stock/', views.manage_stock, name='manage_stock'),
+    path('admin-dashboard/add-stock/', views.add_stock, name='add_stock'),
+    path('admin-dashboard/edit-stock/<int:user_id>/', views.edit_stock, name='edit_stock'),
+    path('admin-dashboard/delete-stock/<int:user_id>/', views.delete_stock, name='delete_stock'),
+    path('admin-dashboard/manage-payments/', views.manage_payments, name='manage_payments'),
+    path('admin-dashboard/manage-produit/', views.manage_produit, name='manage_produit'),
+    path('admin-dashboard/manage-produit/add_produit/', add_produit, name='add_produit'),
+    path('admin-dashboard/manage-produit/filtrer_produit/', views.filtrer_produit, name='filtrer_produit'),
+    path('admin-dashboard/manage-produit/produit-par-catégorie/', get_products_by_category, name='get_products_by_category'),
+    path('admin-dashboard/manage-produit/edit_produit/<int:produit_id>/', views.edit_produit, name='edit_produit'),
+    path('admin-dashboard/manage-produit/delete_produit/', delete_produit, name='delete_produit'),
+    path('admin-dashboard/manage-design/', views.manage_design, name='manage_design'),
 
 
 

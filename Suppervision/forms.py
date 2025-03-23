@@ -70,10 +70,11 @@ class ProduitForm(forms.ModelForm):
         fields = ['nom', 'type', 'unite', 'prix']
         widgets = {
             'nom': forms.TextInput(attrs={'class': 'form-control'}),
-            'type': forms.Select(attrs={'class': 'form-control'}),
+            'type': forms.Select(attrs={'class': 'form-control', 'id': 'id_category_produit'}),
             'unite': forms.TextInput(attrs={'class': 'form-control'}),
             'prix': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
 
 class FournisseurForm(forms.ModelForm):
     class Meta:

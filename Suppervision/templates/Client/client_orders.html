@@ -48,29 +48,6 @@
     .design-btn:hover {
         opacity: 0.8;
     }
-    .pay-btn {
-        display: inline-block;
-        padding: 12px 40px;
-        font-size: 18px;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: white;
-        background: linear-gradient(135deg, #007bff, #0056b3); /* Dégradé bleu */
-        border: none;
-        border-radius: 30px; /* Arrondi des bords */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre douce */
-        transition: all 0.3s ease-in-out;
-        text-decoration: none;
-    }
-    .pay-btn:hover {
-        background: linear-gradient(135deg, #0056b3, #003d80); /* Couleur plus foncée au hover */
-        transform: translateY(-3px); /* Effet de survol */
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-    .pay-btn:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
 </style>
 
 <div class="container my-5">
@@ -127,7 +104,7 @@
     </table>
 
     <div class="text-center mt-4">
-        <a href="{% url 'visite_local' %}" class="pay-btn">Payer</a>
+        <a href="{% url 'visite_local' %}" class="card-btn">Payer</a>
     </div>
     
 </div>

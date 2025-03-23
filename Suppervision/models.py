@@ -70,7 +70,7 @@ class Produit(models.Model):
     nom = models.CharField(max_length=50)
     type = models.ForeignKey(CategoryProduit, null=True, on_delete=models.CASCADE) 
     unite = models.CharField(max_length=31)
-    quantite = models.FloatField(editable=False, null=True)
+    quantite = models.FloatField( null=True)
     prix = models.FloatField()
 
     def __str__(self) :

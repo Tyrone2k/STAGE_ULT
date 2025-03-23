@@ -1,0 +1,16 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5"><br><br>
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body text-center">
+            <h3 class="text-center mb-4">Gestion Produits</h3>
+            <div><a href="{% url 'add_produit' %}" class="card-btn">Insértion</a></div><br>
+            <div><a href="{% url 'filtrer_produit' %}" class="card-btn2">Modification</a></div><br>
+            <div><a href="{% url 'delete_produit' %}" class="card-btn1">Suppression</a></div><br>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

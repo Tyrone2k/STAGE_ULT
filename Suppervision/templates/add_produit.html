@@ -1,0 +1,72 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Ajouter un Produit</h2>
+    <div class="card mx-auto shadow p-4" style="max-width: 600px;">
+        <form method="post" action="{% url 'add_produit' %}">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom du Produit</label>
+                <input type="text" name="nom" id="nom" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="type" class="form-label">Catégorie</label>
+                <select name="type" id="type" class="form-select" required>
+                    <option value="">Sélectionnez une catégorie</option>
+                    {% for category in categories_produit %}
+                        <option value="{{ category.id }}">{{ category.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="unite" class="form-label">Unité</label>
+                <input type="text" name="unite" id="unite" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="prix" class="form-label">Prix</label>
+                <input type="number" name="prix" id="prix" class="form-control" step="0.01" required>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="card-btn">Ajouter</button>
+                <a href="{% url 'admin_dashboard' %}" class="card-btn2">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $('#addProduitForm').submit(function (e) {
+        e.preventDefault();  // Empêche le rechargement de la page
+
+        let formData = new FormData(this);
+        
+        $.ajax({
+            url: "{% url 'add_produit' %}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    $('#addProduitForm')[0].reset();  // Réinitialise le formulaire
+                } else {
+                    alert("Erreur : " + JSON.stringify(response.errors));
+                }
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

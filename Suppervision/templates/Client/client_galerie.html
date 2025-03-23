@@ -22,29 +22,10 @@
             gap: 20px;
         }
 
-        .gallery-item {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            width: 300px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-        }
-
-        .gallery-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
         .gallery-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
-        }
-
-        .gallery-content {
-            padding: 15px;
         }
 
         .gallery-title {
@@ -59,18 +40,6 @@
             color: #666;
         }
 
-        .gallery-btn {
-            padding: 10px 20px;
-            color: #fff;
-            background: #1a008d;
-            border-radius: 10px;
-            text-decoration: none;
-            transition: background 0.3s ease;
-        }
-
-        .gallery-btn:hover {
-            background: #000000;
-        }
         .search-container {
             display: flex;
             justify-content: center;
@@ -120,12 +89,6 @@
         .search-button:hover {
             background: #000000;
         }
-
-        @media (max-width: 768px) {
-            .gallery-item {
-                width: 100%;
-            }
-        }   
     </style>
 
     <!-- Moteur de recherche -->
@@ -140,13 +103,13 @@
     
     <div class="gallery-container">
         {% for design in designs %}
-        <div class="gallery-item">
+        <div class="card mx-auto" style="max-width: 350px;">
             <img src="{% if design.image %}{{ design.image.url }}{% else %}{% static 'images/renova.JPG' %}{% endif %}" 
                  class="gallery-image" alt="{{ design.nom }}">
-            <div class="gallery-content">
+            <div class="card-body text-center">
                 <h3 class="gallery-title">{{ design.nom }}</h3>
                 <p class="gallery-description">{{ design.description }}</p>
-                <a href="{% url 'ajout_produits' design.id %}" class="gallery-btn">Choisir ce design</a>
+                <a href="{% url 'ajout_produits' design.id %}" class="card-btn3">Choisir ce design</a>
             </div>
         </div>
         {% endfor %}
