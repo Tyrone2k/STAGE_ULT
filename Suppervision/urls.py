@@ -48,16 +48,18 @@ urlpatterns = [
     path('admin-dashboard/statistics/', views.statistics, name='statistics'),
     path('admin-dashboard/manage-stock/', views.manage_stock, name='manage_stock'),
     path('admin-dashboard/add-stock/', views.add_stock, name='add_stock'),
-    path('admin-dashboard/edit-stock/<int:user_id>/', views.edit_stock, name='edit_stock'),
-    path('admin-dashboard/delete-stock/<int:user_id>/', views.delete_stock, name='delete_stock'),
+    path('admin-dashboard/edit-stock/<int:stock_id>/', views.edit_stock, name='edit_stock'),
+    path('admin-dashboard/delete-stock/<int:stock_id>/', views.delete_stock, name='delete_stock'),
     path('admin-dashboard/manage-payments/', views.manage_payments, name='manage_payments'),
     path('admin-dashboard/manage-produit/', views.manage_produit, name='manage_produit'),
+    path('admin-dashboard/afficher-produit/', views.afficher_produit, name='afficher_produit'),
     path('admin-dashboard/manage-produit/add_produit/', add_produit, name='add_produit'),
     path('admin-dashboard/manage-produit/filtrer_produit/', views.filtrer_produit, name='filtrer_produit'),
     path('admin-dashboard/manage-produit/produit-par-catégorie/', get_products_by_category, name='get_products_by_category'),
     path('admin-dashboard/manage-produit/edit_produit/<int:produit_id>/', views.edit_produit, name='edit_produit'),
     path('admin-dashboard/manage-produit/delete_produit/', delete_produit, name='delete_produit'),
     path('admin-dashboard/manage-design/', views.manage_design, name='manage_design'),
+    path('admin-dashboard/afficher-design/', views.afficher_design, name='afficher_design'),
 
 
 

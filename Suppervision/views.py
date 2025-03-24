@@ -8,13 +8,14 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import*
 from .forms import*
 from django.db.models import Sum, Count
+import hashlib
 from django.utils import timezone
 from django.contrib import messages
 # import geocoder
@@ -438,24 +439,38 @@ def approve_user(request, user_id):
     return redirect('manage_accounts')
 
 
+def generate_color_from_id(obj_id):
+    """Génère une couleur unique à partir de l'ID de l'objet."""
+    hash_object = hashlib.md5(str(obj_id).encode())  # Crée un hash MD5 de l'ID
+    hex_dig = hash_object.hexdigest()  # Obtenir la représentation hexadécimale
+    return f"#{hex_dig[:6]}"  # Utiliser les 6 premiers caractères pour une couleur hexadécimale
+
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def statistics(request):
+    # Nombre de clients et commandes
     nombre_clients = Client.objects.count()
     nombre_commandes = Commande.objects.count()
-    total_ventes = Paiement.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     
+    # Calcul du total des ventes
+    total_ventes = Paiement.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+
     # Analyse des ventes par catégorie de design
     ventes_par_categorie = {}
     for cat in Design.objects.all():
-        total = ProduitCommande.objects.filter(design=cat).aggregate(Sum('prix'))['prix__sum'] or 0
-        ventes_par_categorie[cat] = total
+        # Total des ventes pour chaque design (calculé en fonction des produits associés aux commandes)
+        total_ventes_design = ProduitCommande.objects.filter(design=cat).aggregate(Sum('prix'))['prix__sum'] or 0
+        ventes_par_categorie[cat] = total_ventes_design
+
+    # Générer des couleurs dynamiques pour chaque design
+    couleurs = [generate_color_from_id(cat.id) for cat in ventes_par_categorie.keys()]
 
     context = {
         'nombre_clients': nombre_clients,
         'nombre_commandes': nombre_commandes,
         'total_ventes': total_ventes,
-        'ventes_par_categorie': ventes_par_categorie
+        'ventes_par_categorie': ventes_par_categorie,
+        'couleurs': couleurs,
     }
     return render(request, 'statistics.html', context)
 
@@ -475,34 +490,54 @@ def add_stock(request):
         form = StockForm(request.POST)
         if form.is_valid():
             stock = form.save(commit=False)
-            stock.created_by = request.user
-            stock.quantite_actuelle = form.cleaned_data['quantite_initiale']  # Initialiser quantite_actuelle
+
+            # Vérification de l'authentification
+            if request.user.is_authenticated:
+                stock.created_by = request.user  # Assigner l'objet User
+            else:
+                return HttpResponse("Erreur : utilisateur non authentifié", status=400)
+
+            stock.quantite_actuelle = form.cleaned_data['quantite_initiale']
             stock.save()
+
             return redirect('manage_stock')
+
     else:
         form = StockForm()
+
     return render(request, 'add_stock.html', {'form': form})
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def edit_stock(request, stock_id):
     stock = get_object_or_404(Stock, id=stock_id)
+
     if request.method == 'POST':
         form = StockForm(request.POST, instance=stock)
         if form.is_valid():
-            form.save()
+            stock = form.save(commit=False)
+            stock.created_by = request.user  #  On garde le bon utilisateur
+            stock.save()
             return redirect('manage_stock')
     else:
         form = StockForm(instance=stock)
+
     return render(request, 'edit_stock.html', {'form': form, 'stock': stock})
+
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def delete_stock(request, stock_id):
     stock = get_object_or_404(Stock, id=stock_id)
+
+    #  Vérification des droits avant suppression
+    if stock.created_by != request.user and not request.user.is_superuser:
+        return HttpResponseForbidden("Vous n'avez pas la permission de supprimer ce stock.")
+
     if request.method == 'POST':
         stock.delete()
         return redirect('manage_stock')
+
     return render(request, 'delete_stock.html', {'stock': stock})
 
 
@@ -517,6 +552,40 @@ def manage_payments(request):
 @user_passes_test(is_admin)
 def manage_produit(request):
     return render(request, 'manage_produit.html')
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def afficher_produit(request):
+    produits = Produit.objects.all()
+
+    # Moteur de recherche
+    query = request.GET.get('q', '')
+    if query:
+        produits = produits.filter(nom__icontains=query)
+
+    # Passer les données au template
+    context = {
+        'produits': produits,
+        'query': query,
+    }
+    return render(request, 'afficher_produit.html', context)
+
+def afficher_design(request):
+    # Récupérer tous les designs
+    designs = Design.objects.all()
+
+    # Moteur de recherche
+    query = request.GET.get('q', '')
+    if query:
+        designs = designs.filter(nom__icontains=query)
+
+    # Passer les données au template
+    context = {
+        'designs': designs,
+        'query': query,
+    }
+    return render(request, 'afficher_design.html', context)
+
 
 # Vue pour ajouter un produit via AJAX
 @csrf_exempt

@@ -3,9 +3,13 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="container my-5">
     <h1 class="text-center mb-4">Statistiques</h1>
-
+    <div class="mb-3 text-start">
+        <a href="{% url 'admin_dashboard' %}" class="card-btn1">← Retour</a>
+    </div>
     <div class="row g-4">
         <div class="col-md-4">
             <div class="card shadow">
@@ -33,25 +37,88 @@
         </div>
     </div>
 
-    <!-- Graphique ou tableau pour les données plus détaillées -->
+    <!-- Graphique et Tableau -->
     <div class="mt-4">
-        <h2>Analyse des Ventes par Catégorie de Design</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Design</th>
-                    <th>Total des Ventes</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cat, total in ventes_par_categorie.items %}
-                <tr>
-                    <td>{{ cat.nom }}</td>
-                    <td>{{ total }} BIF</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h3 class="text-center">Analyse des Ventes par Catégorie de Design</h3><br>
+        <div class="row">
+            <!-- Tableau -->
+            <div class="col-md-7">
+                <div class="card shadow p-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Design</th>
+                                <th>Total des Ventes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat, total in ventes_par_categorie.items %}
+                            <tr>
+                                <td>
+                                    <span class="legend-color"></span>
+                                    {{ cat.nom }}
+                                </td>
+                                <td>{{ total }} BIF</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Graphique circulaire -->
+            <div class="col-md-4">
+                <div class="card shadow p-4">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
+
+<!-- Script pour générer le graphique -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("pieChart").getContext("2d");
+
+        // Récupérer les labels et les valeurs des ventes
+        var labels = [{% for cat in ventes_par_categorie.keys %}"{{ cat.nom }}",{% endfor %}];
+        var data = [{% for total in ventes_par_categorie.values %}{{ total }},{% endfor %}];
+        var colors = [{% for color in couleurs %}"{{ color }}",{% endfor %}];
+
+        var chartData = {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors
+            }]
+        };
+
+        var options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: options
+        });
+    });
+</script>
+
+<style>
+    /* Styles pour la légende colorée */
+    .legend-color {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        border-radius: 50%;
+    }
+</style>
+
 {% endblock %}

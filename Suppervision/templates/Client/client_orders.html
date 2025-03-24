@@ -52,61 +52,62 @@
 
 <div class="container my-5">
     <h1 class="text-center mb-4">Mon Panier</h1>
+    <div class="card shadow p-4">   
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Design</th>
+                    <th>Produits</th>
+                    <th>Date</th>
+                    <th>Prix</th>
+                    <th>Annuler</th>
+                    <th>Catégorie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr id="order-{{ order.id }}">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.category.nom }}</td>
+                    <td>
+                        {% for produit in order.produitcommande_set.all %}
+                            {{ produit.produit.type.nom }} : {{ produit.produit.nom }} ({{ produit.produit.unite }})<br>
+                        {% empty %}
+                            Aucun produit
+                        {% endfor %}
+                    </td>
+                    <td>{{ order.created_at|date:"j M Y H:i" }}</td>
+                    <td>
+                        {% for produit in order.produitcommande_set.all %}
+                            {{ produit.produit.prix }} BIF<br>
+                        {% empty %}
+                            Aucun produit
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <button class="cancel-btn" data-order-id="{{ order.id }}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button class="design-btn btn-interieur" onclick="selectCategory('Interieur', {{ order.id }}, this)">Intérieur</button>
+                        <button class="design-btn btn-exterieur" onclick="selectCategory('Exterieur', {{ order.id }}, this)">Extérieur</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucune commande pour le moment.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Design</th>
-                <th>Produits</th>
-                <th>Date</th>
-                <th>Prix</th>
-                <th>Annuler</th>
-                <th>Catégorie</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr id="order-{{ order.id }}">
-                <td>{{ order.id }}</td>
-                <td>{{ order.category.nom }}</td>
-                <td>
-                    {% for produit in order.produitcommande_set.all %}
-                        {{ produit.produit.type.nom }} : {{ produit.produit.nom }} ({{ produit.produit.unite }})<br>
-                    {% empty %}
-                        Aucun produit
-                    {% endfor %}
-                </td>
-                <td>{{ order.created_at|date:"j M Y H:i" }}</td>
-                <td>
-                    {% for produit in order.produitcommande_set.all %}
-                        {{ produit.produit.prix }}BIF<br>
-                    {% empty %}
-                        Aucun produit
-                    {% endfor %}
-                </td>
-                <td>
-                    <button class="cancel-btn" data-order-id="{{ order.id }}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </td>
-                <td>
-                    <button class="design-btn btn-interieur" onclick="selectCategory('Interieur', {{ order.id }}, this)">Intérieur</button>
-                    <button class="design-btn btn-exterieur" onclick="selectCategory('Exterieur', {{ order.id }}, this)">Extérieur</button>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">Aucune commande pour le moment.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="text-center mt-4">
-        <a href="{% url 'visite_local' %}" class="card-btn">Payer</a>
-    </div>
-    
+        <div class="text-center mt-4">
+            <a href="{% url 'visite_local' %}" class="card-btn">Payer</a>
+            <a href="{% url 'client-home' %}" class="card-btn1">Retour</a>
+        </div>
+    </div> 
 </div>
 
 <!-- Formulaire invisible pour CSRF Token -->

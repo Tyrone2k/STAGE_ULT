@@ -1,0 +1,102 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+
+<style>
+    .search-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 30px auto;
+    }
+
+    .search-container form{
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 25px;
+        padding: 5px 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 25px;
+        background: none;
+    }
+
+    .search-button {
+        background: #f3f3f3;
+        color: rgb(111, 111, 111);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .search-button i {
+        font-size: 18px;
+    }
+
+    .search-button:hover {
+        background: #000000;
+    }
+</style>
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Liste des Designs</h1>
+
+    <!-- Bouton Retour -->
+    <div class="mb-3 text-start">
+        <a href="{% url 'admin_dashboard' %}" class="card-btn1">← Retour</a>
+    </div>
+
+    <!-- Moteur de recherche -->
+    <div class="search-container mb-4">
+        <form method="GET">
+            <input type="text" name="q" class="search-input form-control d-inline-block w-50" 
+                   placeholder="Rechercher un design..." value="{{ query }}">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Tableau des designs -->
+    <div class="card  text-center shadow p-4" style="max-width: 900px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for design in designs %}
+                    <tr>
+                        <td>{{ design.id }}</td>
+                        <td>{{ design.nom }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">Aucun design trouvé</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

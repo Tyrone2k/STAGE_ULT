@@ -5,31 +5,36 @@
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
     <h1>Approuver les comptes</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Groupe</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in pending_users %}
-            <tr>
-                <td>{{ user.first_name }} {{ user.last_name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.groups.first.name|default:"Pas de groupe" }}</td>
-                <td>
-                    <form method="post" action="{% url 'approve_user' user.id %}">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="approve" class="btn btn-success">Accepter</button>
-                        <button type="submit" name="action" value="reject" class="btn btn-danger">Refuser</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="mb-3 text-start">
+        <a href="{% url 'admin_dashboard' %}" class="card-btn1">← Retour</a>
+    </div>
+    <div class="card shadow p-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Groupe</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in pending_users %}
+                <tr>
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.groups.first.name|default:"Pas de groupe" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'approve_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="approve" class="btn btn-success">Accepter</button>
+                            <button type="submit" name="action" value="reject" class="btn btn-danger">Refuser</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

@@ -5,36 +5,39 @@
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
     <h1 class="text-center mb-4">Liste des Rénovations</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Client</th>
-                <th>Date </th>
-                <th>Description</th>
-                <th>Budget</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for renovation in renovations %}
-            <tr>
-                <td>{{ renovation.id }}</td>
-                <td>{{ renovation.client.user.username }}</td>
-                <td>{{ renovation.created_at|date:'j M Y H:i' }}</td>
-                <td>{{ renovation.description|truncatechars:50 }}</td>
-                <td>{{ renovation.budget2.montant }} BIF</td>
-                <td>
-                    <a href="{% url 'renovation_detail' renovation_id=renovation.id %}" class="btn btn-info btn-sm">Détails</a>
-                    <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="btn btn-success btn-sm">Marquer comme Terminé</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">Aucune rénovation enregistrée.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <a href="{% url 'superviseur_dashboard' %}" class="card-btn1">← Retour</a><br><br>
+    <div class="card  text-center shadow p-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Date </th>
+                    <th>Description</th>
+                    <th>Budget</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for renovation in renovations %}
+                <tr>
+                    <td>{{ renovation.id }}</td>
+                    <td>{{ renovation.client.user.username }}</td>
+                    <td>{{ renovation.created_at|date:'j M Y H:i' }}</td>
+                    <td>{{ renovation.description|truncatechars:50 }}</td>
+                    <td>{{ renovation.budget2.montant }} BIF</td>
+                    <td>
+                        <a href="{% url 'renovation_detail' renovation_id=renovation.id %}" class="btn btn-info btn-sm">Détails</a>
+                        <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="btn btn-success btn-sm">Marquer comme Terminé</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Aucune rénovation enregistrée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

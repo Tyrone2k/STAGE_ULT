@@ -5,11 +5,17 @@
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
     <h1 class="text-center mb-4">Modifier le Stock</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="{% url 'manage_stock' %}" class="btn btn-secondary">Annuler</a>
-    </form>
+    <div class="card mx-auto shadow p-4" style="max-width: 600px;">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <div class="mb-3 text-center">
+                <button type="submit" class="card-btn3">Enregistrer</button>
+                <a href="{% url 'manage_stock' %}" class="card-btn1">Annuler</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

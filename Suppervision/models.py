@@ -88,11 +88,11 @@ class Fournisseur(models.Model):
     
 class Stock(models.Model):
     id = models.AutoField(primary_key=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT)
-    quantite_initiale = models.FloatField(default=0)
-    quantite_actuelle = models.FloatField(default=0)  # Mise à jour automatique
+    quantite_initiale = models.FloatField()
+    quantite_actuelle = models.FloatField(editable=False)  # Mise à jour automatique
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     delais_expiration = models.PositiveIntegerField(null=True, blank=True)
     prix = models.FloatField()  # Calculé automatiquement

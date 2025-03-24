@@ -5,11 +5,15 @@
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
     <h1 class="text-center mb-4">Supprimer le Stock</h1>
-    <p>Êtes-vous sûr de vouloir supprimer le stock de {{ stock.produit.nom }} ?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Supprimer</button>
-        <a href="{% url 'manage_stock' %}" class="btn btn-secondary">Annuler</a>
-    </form>
+    <div class="card mx-auto shadow p-4" style="max-width: 500px;">
+        <form method="post">
+            {% csrf_token %}
+            <p>Êtes-vous sûr de vouloir supprimer le stock de {{ stock.produit.nom }} ?</p>
+            <div class="mb-3 text-center">
+                <button type="submit" class="card-btn4">Supprimer</button>
+                <a href="{% url 'manage_stock' %}" class="card-btn1">Annuler</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
