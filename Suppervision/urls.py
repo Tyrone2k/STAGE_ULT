@@ -60,6 +60,7 @@ urlpatterns = [
     path('admin-dashboard/manage-produit/delete_produit/', delete_produit, name='delete_produit'),
     path('admin-dashboard/manage-design/', views.manage_design, name='manage_design'),
     path('admin-dashboard/afficher-design/', views.afficher_design, name='afficher_design'),
+    path('admin-dashboard/manage-design/add_design/', add_design, name='add_design'),
 
 
 

@@ -557,15 +557,18 @@ def manage_produit(request):
 @user_passes_test(is_admin)
 def afficher_produit(request):
     produits = Produit.objects.all()
+    cat = CategoryProduit.objects.all()
 
     # Moteur de recherche
     query = request.GET.get('q', '')
     if query:
         produits = produits.filter(nom__icontains=query)
+        cat = cat.filter(nom__icontains=query)
 
     # Passer les données au template
     context = {
         'produits': produits,
+        'cat': cat,
         'query': query,
     }
     return render(request, 'afficher_produit.html', context)
@@ -591,15 +594,27 @@ def afficher_design(request):
 @csrf_exempt
 def add_produit(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        form = ProduitForm(request.POST, request.FILES)   
+        form = ProduitForm(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({'success': True, 'message': 'Produit ajouté avec succès'})
-        return JsonResponse({'success': False, 'errors': form.errors})
+        return JsonResponse({'success': False, 'errors': form.errors})  
 
     form = ProduitForm()
     categories = CategoryProduit.objects.all()
-    return render(request, 'add_produit.html', {'categories_produit': categories,'form': form})
+    return render(request, 'add_produit.html', {'categories_produit': categories, 'form': form})
+
+@csrf_exempt
+def add_design(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        form = DesignForm(request.POST, request.FILES)  # Prend en charge les fichiers
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Design ajouté avec succès'})
+        return JsonResponse({'success': False, 'errors': form.errors})
+
+    form = DesignForm()
+    return render(request, 'add_design.html', {'form': form})
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)

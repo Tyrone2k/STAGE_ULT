@@ -10,17 +10,17 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Commande</th>
+                    <th>Client</th>
                     <th>Type de Paiement</th>
                     <th>Montant</th>
                     <th>Date de Paiement</th>
-                    <th>Utilisateur</th>
+                    <th>Superviseur</th>
                 </tr>
             </thead>
             <tbody>
                 {% for paiement in paiements %}
                 <tr>
-                    <td>{{ paiement.commande }}</td>
+                    <td>{{ paiement.commande.created_by.user.first_name }} {{ paiement.commande.created_by.user.last_name }}</td>
                     <td>{{ paiement.type_paiement }}</td>
                     <td>{{ paiement.montant }} BIF</td>
                     <td>{{ paiement.created_at|date:'j M Y H:i' }}</td>

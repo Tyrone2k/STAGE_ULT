@@ -6,7 +6,7 @@
 <div class="container my-5">
     <h2 class="text-center mb-4">Ajouter un Produit</h2>
     <div class="card mx-auto shadow p-4" style="max-width: 600px;">
-        <form method="post" action="{% url 'add_produit' %}">
+        <form method="post" id="addProduitForm" enctype="multipart/form-data">
             {% csrf_token %}
             
             <div class="mb-3">
@@ -17,7 +17,7 @@
             <div class="mb-3">
                 <label for="type" class="form-label">Catégorie</label>
                 <select name="type" id="type" class="form-select" required>
-                    <option value=""></option>
+                    <option value="">-- Sélectionnez une catégorie --</option>
                     {% for category in categories_produit %}
                         <option value="{{ category.id }}">{{ category.nom }}</option>
                     {% endfor %}
@@ -38,16 +38,19 @@
                 <button type="submit" class="card-btn">Ajouter</button>
                 <a href="{% url 'manage_produit' %}" class="card-btn1">Retour</a>
             </div>
+
+            <div id="message" class="text-center mt-3"></div>  
         </form>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
     $('#addProduitForm').submit(function (e) {
         e.preventDefault();  // Empêche le rechargement de la page
 
-        let formData = new FormData(this);
+        let formData = new FormData(this);  // Sérialise les données du formulaire
         
         $.ajax({
             url: "{% url 'add_produit' %}",
@@ -55,14 +58,24 @@ $(document).ready(function () {
             data: formData,
             processData: false,
             contentType: false,
-            headers: { "X-Requested-With": "XMLHttpRequest" },
+            headers: { "X-Requested-With": "XMLHttpRequest" },  
             success: function (response) {
                 if (response.success) {
-                    alert(response.message);
+                    $('#message').html('<div class="card alert-success text-white" style="background-color: green;">✔ Produit ajouté avec succès</div>');
+
                     $('#addProduitForm')[0].reset();  // Réinitialise le formulaire
+
+                    // Effacer le message après 3 secondes
+                    setTimeout(function () {
+                        $('#message').fadeOut('slow');
+                    }, 3000);
                 } else {
-                    alert("Erreur : " + JSON.stringify(response.errors));
+                    let errors = Object.values(response.errors).map(err => `<li>${err}</li>`).join("");
+                    $('#message').html('<div class="card alert-danger text-white" style="background-color: red;"><ul>' + errors + '</ul></div>');
                 }
+            },
+            error: function () {
+                $('#message').html('<div class="card alert-danger text-white" style="background-color: red;">❌ Erreur lors de l\'ajout du produit.</div>');
             }
         });
     });

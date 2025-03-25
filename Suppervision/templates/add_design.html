@@ -1,0 +1,76 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Ajouter un Design</h2>
+    <div class="card mx-auto shadow p-4" style="max-width: 600px;">
+        <form method="post" id="addDesignForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom du Design</label>
+                <input type="text" name="nom" id="nom" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" name="description" id="description" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Image du Design</label>
+                <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="card-btn">Ajouter</button>
+                <a href="{% url 'manage_design' %}" class="card-btn1">Retour</a>
+            </div>
+
+            <!-- Zone pour afficher le message de succès ou d'erreur -->
+            <div id="message" class="text-center mt-3"></div>  
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    $('#addDesignForm').submit(function (e) {
+        e.preventDefault();  // Empêche le rechargement de la page
+
+        let formData = new FormData(this);  // Gère les fichiers
+
+        $.ajax({
+            url: "{% url 'add_design' %}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+            success: function (response) {
+                if (response.success) {
+                    $('#message').html('<div class="card alert-success text-white" style="background-color: green;">✔ Design ajouté avec succès</div>');
+
+                    $('#addDesignForm')[0].reset();  // Réinitialise le formulaire
+
+                    // Effacer le message après 3 secondes
+                    setTimeout(function () {
+                        $('#message').fadeOut('slow');
+                    }, 3000);
+                } else {
+                    let errors = Object.values(response.errors).map(err => `<li>${err}</li>`).join("");
+                    $('#message').html('<div class="card alert-danger text-white" style="background-color: red;"><ul>' + errors + '</ul></div>');
+                }
+            },
+            error: function () {
+                $('#message').html('<div class="card alert-danger text-white" style="background-color: red;">❌ Erreur lors de l\'ajout du design.</div>');
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}
