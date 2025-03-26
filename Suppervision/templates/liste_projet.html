@@ -4,9 +4,9 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
-    <h1 class="text-center mb-4">Liste des Rénovations</h1>
+    <h1 class="text-center mb-4">Liste des Projets</h1>
     <a href="{% url 'superviseur_dashboard' %}" class="card-btn1">← Retour</a>   
-    <a href="#" class="card-btn">Ajouter une validation</a><br><br>
+    <a href="#" class="card-btn">Ajouter un projet</a><br><br>
     <div class="card  text-center shadow p-4">
         <table class="table table-striped">
             <thead>
@@ -15,21 +15,21 @@
                     <th>Client</th>
                     <th>Date </th>
                     <th>Description</th>
-                    <th>Budget Final</th>
+                    <th>Budget d'avance</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for renovation in renovations %}
+                {% for projet in projets %}
                 <tr>
-                    <td>{{ renovation.id }}</td>
-                    <td>{{ renovation.client.user.last_name }} {{ renovation.client.user.last_name }}</td>
-                    <td>{{ renovation.created_at|date:'j M Y H:i' }}</td>
-                    <td>{{ renovation.description|truncatechars:50 }}</td>
-                    <td>{{ renovation.budget2.montant }} BIF</td>
+                    <td>{{ projet.id }}</td>
+                    <td>{{ projet.client.user.last_name }} {{ projet.client.user.last_name }}</td>
+                    <td>{{ projet.created_at|date:'j M Y H:i' }}</td>
+                    <td>{{ projet.description|truncatechars:50 }}</td>
+                    <td>{{ projet.budget1.montant }} BIF</td>
                     <td>
-                        <a href="{% url 'renovation_detail' renovation_id=renovation.id %}" class="form-btn btn2">Détails</a>
-                        <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="form-btn btn1">Terminé</a>
+                        <a href="#" class="form-btn btn2">Détails</a>
+                        <a href="#" class="form-btn btn1">Terminé</a>
                     </td>
                 </tr>
                 {% empty %}

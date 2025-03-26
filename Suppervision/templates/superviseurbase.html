@@ -73,6 +73,26 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
+        .form-btn {
+            display: inline-block;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.45s;
+            text-decoration: none;
+        }
+
+        .btn1 { background-color: #00701a; color: white; }
+        .btn2 { background-color: #ffa600; color: white; }
+        .btn3 { background-color: #ff1616; color: white; }
+
+        .form-btn:hover {
+            background: #000000;
+            color: rgb(255, 255, 255);
+        }
+ 
         .card-btn {
             display: inline-block;
             padding: 12px 40px;
@@ -198,7 +218,7 @@
         <nav class="nav flex-column">
             <a class="nav-link" href="{% url 'superviseur_dashboard' %}">Menu</a>
             <a class="nav-link" href="{% url 'liste_attente' %}">Supervision</a>
-            <a class="nav-link" href="{% url 'manage_liste_attente' %}">En Attente</a>
+            <a class="nav-link" href="{% url 'liste_projet' %}">Projet</a>
             <a class="nav-link" href="{% url 'liste_renovation' %}">Validation</a>
             <a class="nav-link" href="#">Feedback</a>
             <a class="nav-link" href="/admin">Paramètres</a>

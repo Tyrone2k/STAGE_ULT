@@ -55,7 +55,7 @@ urlpatterns = [
     path('admin-dashboard/afficher-produit/', views.afficher_produit, name='afficher_produit'),
     path('admin-dashboard/manage-produit/add_produit/', add_produit, name='add_produit'),
     path('admin-dashboard/manage-produit/filtrer_produit/', views.filtrer_produit, name='filtrer_produit'),
-    path('admin-dashboard/manage-produit/produit-par-catégorie/', get_products_by_category, name='get_products_by_category'),
+    path('admin-dashboard/manage-produit/produit-par-catégorie/', views.get_products_by_category, name='get_products_by_category'),
     path('admin-dashboard/manage-produit/edit_produit/<int:produit_id>/', views.edit_produit, name='edit_produit'),
     path('admin-dashboard/manage-produit/delete_produit/', delete_produit, name='delete_produit'),
     path('admin-dashboard/manage-design/', views.manage_design, name='manage_design'),
@@ -73,4 +73,8 @@ urlpatterns = [
     path('superviseur/renovation/list/', views.liste_renovation, name='liste_renovation'),
     path('superviseur/renovation/<int:renovation_id>/', views.renovation_detail, name='renovation_detail'),
     path('superviseur/renovation/<int:renovation_id>/mark-done/', views.mark_renovation_done, name='confirm_renovation_done'),
+
+    path('superviseur/projet/list/', views.liste_projet, name='liste_projet'),
+    path('superviseur/projet/<int:projet_id>/', views.projet_detail, name='projet_detail'),
+    path('superviseur/projet/<int:projet_id>/mark-done/', views.mark_projet_done, name='confirm_projet_done'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

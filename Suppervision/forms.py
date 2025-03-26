@@ -65,6 +65,11 @@ class TypePaiementForm(forms.ModelForm):
         }
 
 class ProduitForm(forms.ModelForm):
+    type = forms.ModelChoiceField(
+        queryset=CategoryProduit.objects.all(),
+        required=False,
+        empty_label="Sélectionner une catégorie de produit"
+    )
     class Meta:
         model = Produit
         fields = ['nom', 'type', 'unite', 'prix']
@@ -131,6 +136,11 @@ class ProduitCommandeForm(forms.ModelForm):
         required=False,
         empty_label="Sélectionner une catégorie de design"
     )
+    design = forms.ModelChoiceField(
+        queryset=Design.objects.all(),
+        required=False,
+        empty_label="Sélectionner un design"
+    )
 
     class Meta:
         model = ProduitCommande
@@ -146,6 +156,11 @@ class PaiementForm(forms.ModelForm):
     created_at = forms.DateTimeField(
         required=False, 
         widget=forms.DateTimeInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
+    type_paiement = forms.ModelChoiceField(
+        queryset=TypePaiement.objects.all(),
+        required=False,
+        empty_label="Sélectionner un type de paiement"
     )
     class Meta:
         model = Paiement

@@ -6,13 +6,14 @@
     <h1 class="text-center mb-4">Détails de la Rénovation</h1>
     <div class="card shadow">
         <div class="card-body">
-            <h4 class="card-title">Rénovation pour {{ renovation.client.user.username }}</h4>
+            <h4 class="card-title">Rénovation pour {{ renovation.client.user.last_name }} {{ renovation.client.user.first_name }}</h4>
+            {% if renovation.image %}
+                <img src="{{ renovation.image.url }}" alt="{{ renovation.id }}" class="img-fluid rounded" style="max-height: 200px;" />
+            {% endif %}
             <p><strong>Description:</strong> {{ renovation.description }}</p>
-            <p><strong>Budget:</strong> {{ renovation.budget2.montant }} BIF</p>
+            <p><strong>Budget Final:</strong> {{ renovation.budget2.montant }} BIF</p>
             <p>
-                <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="btn btn-success">
-                    Marquer comme Terminé
-                </a>
+                <a href="{% url 'confirm_renovation_done' renovation_id=renovation.id %}" class="form-btn btn1">Terminé</a>
             </p>
         </div>
     </div>

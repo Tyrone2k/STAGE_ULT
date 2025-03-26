@@ -32,8 +32,8 @@
                     <td>{{ stock.created_at|date:'j M Y H:i' }}</td>
                     <td>{{ stock.delais_expiration|default:"N/A" }} jours</td>
                     <td>
-                        <a href="{% url 'edit_stock' stock.id %}" class="btn btn-warning btn-sm">Modifier</a>
-                        <a href="{% url 'delete_stock' stock.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                        <a href="{% url 'edit_stock' stock.id %}" class="form-btn btn2">Modifier</a>
+                        <a href="{% url 'delete_stock' stock.id %}" class="form-btn btn3">Supprimer</a>
                     </td>
                 </tr>
                 {% endfor %}

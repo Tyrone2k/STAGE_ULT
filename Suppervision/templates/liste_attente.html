@@ -28,9 +28,9 @@
                     <td>{{ entry.created_at|date:'j M Y H:i' }}</td>
                     <td>{% if entry.done %}Terminé{% else %}En Attente{% endif %}</td>
                     <td>
-                        <a href="{% url 'liste_attente_detail' liste_attente_id=entry.id %}" class="btn btn-info btn-sm">Détails</a>
+                        <a href="{% url 'liste_attente_detail' liste_attente_id=entry.id %}" class="form-btn btn2">Détails</a>
                         {% if not entry.done %}
-                        <a href="{% url 'confirm_mark_done' liste_attente_id=entry.id %}" class="btn btn-success btn-sm">Terminé</a>
+                        <a href="{% url 'confirm_mark_done' liste_attente_id=entry.id %}" class="form-btn btn1">Terminé</a>
                         {% endif %}
                     </td>
                 </tr>

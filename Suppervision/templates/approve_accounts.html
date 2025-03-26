@@ -12,23 +12,27 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Nom</th>
+                    <th>Nom & Prénom</th>
                     <th>Email</th>
-                    <th>Groupe</th>
+                    <th>Age</th>
+                    <th>Mobile</th>
+                    <th>Adresse</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in pending_users %}
                 <tr>
-                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.last_name }} {{ user.first_name }}</td>
                     <td>{{ user.email }}</td>
-                    <td>{{ user.groups.first.name|default:"Pas de groupe" }}</td>
+                    <td>{{ user.client.age|default:"-" }}</td>
+                    <td>{{ user.client.mobile }}</td>
+                    <td>{{ user.client.address|default:"-" }}</td>
                     <td>
                         <form method="post" action="{% url 'approve_user' user.id %}">
                             {% csrf_token %}
-                            <button type="submit" name="action" value="approve" class="btn btn-success">Accepter</button>
-                            <button type="submit" name="action" value="reject" class="btn btn-danger">Refuser</button>
+                            <button type="submit" name="action" value="approve" class="form-btn btn1">Accepter</button>
+                            <button type="submit" name="action" value="reject" class="form-btn btn3">Refuser</button>
                         </form>
                     </td>
                 </tr>

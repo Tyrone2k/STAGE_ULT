@@ -1,0 +1,21 @@
+{% extends "superviseurbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Détails du projet</h1>
+    <div class="card shadow">
+        <div class="card-body">
+            <h4 class="card-title">Rénovation pour {{ projet.client.user.last_name }} {{ projet.client.user.first_name }}</h4>
+            {% if projet.image %}
+                <img src="{{ projet.image.url }}" alt="{{ projet.id }}" class="img-fluid rounded" style="max-height: 200px;" />
+            {% endif %}
+            <p><strong>Description:</strong> {{ projet.description }}</p>
+            <p><strong>Budget d'avance:</strong> {{ projet.budget2.montant }} BIF</p>
+            <p>
+                <a href="#" class="form-btn btn1">Terminé</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

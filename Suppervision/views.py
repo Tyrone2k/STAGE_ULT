@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -414,6 +414,10 @@ def edit_profile_view(request):
 # ------- A D M I N   D A S H B O A R D ------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------
 
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def admindashboard(request):
@@ -422,21 +426,26 @@ def admindashboard(request):
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def manage_accounts(request):
-    pending_users = User.objects.filter(is_active=False)
+    pending_users = User.objects.filter(is_active=False, client__is_rejected=False)
     return render(request, 'approve_accounts.html', {'pending_users': pending_users})
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)
 def approve_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
-    if request.method == 'POST':
+    client = getattr(user, 'client', None)  # Vérifier si l'utilisateur a un profil client
+    if request.method == 'POST' and client:
         action = request.POST.get('action')
         if action == 'approve':
             user.is_active = True
+            client.is_rejected = False
         elif action == 'reject':
-            user.is_active = False  # Peut-être garder l'utilisateur inactif si refusé
+            user.is_active = False
+            client.is_rejected = True
         user.save()
+        client.save()  # Sauvegarder aussi le client
     return redirect('manage_accounts')
+
 
 
 def generate_color_from_id(obj_id):
@@ -573,6 +582,81 @@ def afficher_produit(request):
     }
     return render(request, 'afficher_produit.html', context)
 
+# Vue pour ajouter un produit via AJAX
+@csrf_exempt
+def add_produit(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        form = ProduitForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Produit ajouté avec succès'})
+        return JsonResponse({'success': False, 'errors': form.errors})  
+
+    form = ProduitForm()
+    categories = CategoryProduit.objects.all()
+    return render(request, 'add_produit.html', {'categories_produit': categories, 'form': form})
+
+# Vue pour filtrer les produits par catégorie
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def filtrer_produit(request):
+    categories = CategoryProduit.objects.all()
+    produits = Produit.objects.all()  # Tous les produits au départ
+
+    return render(request, 'filtrer_produit.html', {
+        'categories_produit': categories,
+        'produits_all': produits
+    })
+
+# Vue AJAX pour récupérer les produits d'une catégorie sélectionnée
+@user_passes_test(is_admin)
+def get_products_by_category(request):
+    category_id = request.GET.get("category_id")
+
+    if category_id:
+        try:
+            produits = Produit.objects.filter(type_id=int(category_id))
+        except ValueError:
+            return JsonResponse({"error": "ID de catégorie invalide"}, status=400)
+    else:
+        produits = Produit.objects.all()
+    
+    data = {"produits": [{"id": p.id, "nom": p.nom, "unite": p.unite, "prix": p.prix} for p in produits]}
+    return JsonResponse(data)
+
+# Vue pour modifier un produit
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def edit_produit(request, produit_id):
+    produit = get_object_or_404(Produit, id=produit_id)
+
+    if request.method == "POST":
+        form = ProduitForm(request.POST, instance=produit)
+        if form.is_valid():
+            form.save()
+            return redirect('filtrer_produit')  # Redirige après modification
+    else:
+        form = ProduitForm(instance=produit)
+
+    return render(request, 'edit_produit.html', {'form': form, 'produit': produit})
+
+
+# Vue pour supprimer un produit via AJAX
+@csrf_exempt
+def delete_produit(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        produit_id = request.POST.get('produit_id')
+        produit = get_object_or_404(Produit, id=produit_id)
+        produit.delete()
+        return JsonResponse({'success': True, 'message': 'Produit supprimé avec succès'})
+    return JsonResponse({'success': False, 'message': 'Requête invalide'})
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def manage_design(request):
+    return render(request, 'manage_design.html')
+
 def afficher_design(request):
     # Récupérer tous les designs
     designs = Design.objects.all()
@@ -589,21 +673,6 @@ def afficher_design(request):
     }
     return render(request, 'afficher_design.html', context)
 
-
-# Vue pour ajouter un produit via AJAX
-@csrf_exempt
-def add_produit(request):
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        form = ProduitForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True, 'message': 'Produit ajouté avec succès'})
-        return JsonResponse({'success': False, 'errors': form.errors})  
-
-    form = ProduitForm()
-    categories = CategoryProduit.objects.all()
-    return render(request, 'add_produit.html', {'categories_produit': categories, 'form': form})
-
 @csrf_exempt
 def add_design(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -615,51 +684,6 @@ def add_design(request):
 
     form = DesignForm()
     return render(request, 'add_design.html', {'form': form})
-
-@login_required(login_url='login')
-@user_passes_test(is_admin)
-def filtrer_produit(request):
-    categories = CategoryProduit.objects.all()
-    produits = Produit.objects.all()
-    return render(request, 'filtrer_produit.html', {'categories_produit': categories, 'produits_all': produits})
-
-@login_required(login_url='login')
-@user_passes_test(is_admin)
-def edit_produit(request, produit_id):
-    produit = get_object_or_404(Produit, id=produit_id)
-
-    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        produit.nom = request.POST.get('nom')
-        produit.unite = request.POST.get('unite')
-        produit.prix = request.POST.get('prix')
-        produit.save()
-        return JsonResponse({'success': True, 'message': 'Produit mis à jour avec succès'})
-
-    return render(request, 'edit_produit.html', {'produit': produit})
-
-
-# Vue pour supprimer un produit via AJAX
-@csrf_exempt
-def delete_produit(request):
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        produit_id = request.POST.get('produit_id')
-        produit = get_object_or_404(Produit, id=produit_id)
-        produit.delete()
-        return JsonResponse({'success': True, 'message': 'Produit supprimé avec succès'})
-    return JsonResponse({'success': False, 'message': 'Requête invalide'})
-
-
-# Vue pour charger les produits selon la catégorie sélectionnée (Utilisé dans AJAX)
-def get_products_by_category(request):
-    category_id = request.GET.get('category_id')
-    produits = Produit.objects.filter(type_id=category_id).values('id', 'nom') if category_id else []
-    return JsonResponse({'produits': list(produits)})
-
-
-@login_required(login_url='login')
-@user_passes_test(is_admin)
-def manage_design(request):
-    return render(request, 'manage_design.html')
 
 
 # -------------------------------------------------------------------------------------------------------------
@@ -711,7 +735,6 @@ def mark_liste_attente_done(request, liste_attente_id):
     return render(request, 'confirm_mark_done.html', {'liste_attente': liste_attente})
 
 
-
 @login_required(login_url='login')
 @user_passes_test(is_supervisor)
 def liste_renovation(request):
@@ -738,3 +761,28 @@ def mark_renovation_done(request, renovation_id):
         return redirect('renovation_detail', renovation_id=renovation_id)
     return render(request, 'confirm_renovation_done.html', {'renovation': renovation})
 
+@login_required(login_url='login')
+@user_passes_test(is_supervisor)
+def liste_projet(request):
+    projets = SuppervisionTravaux.objects.all().order_by('-id')  # Tri par ID décroissant pour les plus récentes d'abord
+    context = {
+        'projets': projets,
+    }
+    return render(request, 'liste_projet.html', context)
+
+@login_required(login_url='login')
+@user_passes_test(is_supervisor)
+def projet_detail(request, projet_id):
+    projet = get_object_or_404(SuppervisionTravaux, id=projet_id)
+    return render(request, 'orojet_detail.html', {'projet': projet})
+
+@login_required(login_url='login')
+@user_passes_test(is_supervisor)
+def mark_projet_done(request, projet_id):
+    projet = get_object_or_404(SuppervisionTravaux, id=projet_id)
+    if request.method == 'POST':
+        # Si 'done' n'est pas dans le modèle, peut-être ajouter un champ booléen pour indiquer la fin des travaux
+        projet.done = True
+        projet.save()
+        return redirect('projet_detail', projet_id=projet_id)
+    return render(request, 'confirm_projet_done.html', {'projet': projet})

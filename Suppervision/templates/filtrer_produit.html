@@ -3,31 +3,36 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-4">Séléctionner un Produit</h1>
+    <h1 class="text-center mb-4">Sélectionner un Produit</h1>
     <div class="card mx-auto shadow p-4" style="max-width: 600px;">
-        <form method="post" action="{% url 'filtrer_produit' %}">
+        <form method="get" action="#">
             {% csrf_token %}
+
+            <!-- Filtrer par catégorie de produit -->
             <div class="mb-3">
-                <label for="category_produit">Filtrer par Catégorie</label>
-                <select name="type" id="id_category_produit" class="form-control">
+                <label for="id_category_produit">Filtrer par Catégorie</label>
+                <select name="category_produit" id="id_category_produit" class="form-control">
                     <option value="">Toutes</option>
                     {% for cat in categories_produit %}
                     <option value="{{ cat.id }}">{{ cat.nom }}</option>
                     {% endfor %}
                 </select>
             </div>
-    
+
+            <!-- Sélection du produit -->
             <div class="mb-3">
-                <label for="produit">Sélectionner un Produit</label>
+                <label for="id_produit">Sélectionner un Produit</label>
                 <select name="produit" id="id_produit" class="form-control">
-                    <option value="">Toutes</option>
+                    <option value="">Sélectionner un produit</option>
                     {% for produit in produits_all %}
-                    <option value="{{ produit.id }}">{{ produit.nom }}</option>
+                    <option value="{{ produit.id }}">{{ produit.nom }} - {{ produit.unite }} - {{ produit.prix }}€</option>
                     {% endfor %}
                 </select>
             </div>
+
+            <!-- Actions -->
             <div class="text-center">
-                <button id="editBtn" type="submit" class="card-btn2" disabled>Modifier</button>
+                <button id="editBtn" type="button" class="card-btn2" disabled>Modifier</button>
                 <a href="{% url 'manage_produit' %}" class="card-btn1">Retour</a>
             </div>
         </form>
@@ -36,33 +41,50 @@
 
 <script>
 $(document).ready(function () {
-    // Filtrer les produits dynamiquement
+    // Désactiver le bouton Modifier au chargement
+    $('#editBtn').prop('disabled', true);
+
+    // Filtrage des produits par catégorie
     $('#id_category_produit').change(function () {
         let categoryId = $(this).val();
+        $('#id_produit').empty().append('<option value="">Sélectionner un produit</option>'); // Réinitialisation
 
-        $.ajax({
-            url: "{% url 'get_products_by_category' %}",
-            type: "GET",
-            data: { category_id: categoryId },
-            success: function (data) {
-                $('#id_produit').empty().append('<option value="">Sélectionner un produit</option>');
-                $.each(data.produits, function (index, produit) {
-                    $('#id_produit').append(`<option value="${produit.id}">${produit.nom}</option>`);
-                });
-            }
-        });
+        if (categoryId) {
+            $.ajax({
+                url: "{% url 'get_products_by_category' %}",
+                type: "GET",
+                data: { category_id: categoryId },
+                success: function (data) {
+                    if (data.produits.length > 0) {
+                        $.each(data.produits, function (index, produit) {
+                            $('#id_produit').append(`<option value="${produit.id}">${produit.nom}</option>`);
+                        });
+                    } else {
+                        alert("Aucun produit trouvé pour cette catégorie.");
+                    }
+                },
+                error: function () {
+                    alert("Erreur lors du chargement des produits.");
+                }
+            });
+        }
     });
 
-    // Activer/désactiver le bouton Modifier
+    // Activation du bouton Modifier avec redirection correcte
     $('#id_produit').change(function () {
         let produitId = $(this).val();
+        let editUrlPattern = "{% url 'edit_produit' 999999 %}";  // Modèle d'URL
+        let editUrl = editUrlPattern.replace("999999", produitId);
+
         if (produitId) {
-            $('#editBtn').removeClass('disabled').attr('href', `/admin-dashboard/manage-produit/edit_produit/${produitId}/`);
+            $('#editBtn').prop('disabled', false).off('click').click(function (e) {
+                e.preventDefault();
+                window.location.href = editUrl;  // Rediriger
+            });
         } else {
-            $('#editBtn').addClass('disabled').attr('href', "#");
+            $('#editBtn').prop('disabled', true).off('click');
         }
     });
 });
 </script>
-
 {% endblock %}

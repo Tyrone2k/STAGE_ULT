@@ -11,6 +11,7 @@ class Client(models.Model):
     profile_pic= models.ImageField(upload_to='profile_pic/',null=True,blank=True)
     address = models.CharField(max_length=40, null=True)
     mobile = models.CharField(max_length=20,null=True)
+    is_rejected = models.BooleanField(default=False)
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -30,7 +31,8 @@ class Client(models.Model):
 @receiver(post_save, sender=User)
 def add_user_approved_field(sender, instance, created, **kwargs):
     if created:
-        pass
+        instance.is_rejected = False
+        instance.save()
    
     
 class Design(models.Model):
@@ -163,7 +165,7 @@ class ListeAttente(models.Model):
     
 class SuppervisionTravaux(models.Model):
     id = models.AutoField(primary_key=True)
-    client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
+    client = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     budget1 = models.ForeignKey(Paiement, on_delete=models.PROTECT)
     image = models.ImageField(upload_to='travaux_en_cours/',null=True,blank=True)
@@ -175,7 +177,7 @@ class SuppervisionTravaux(models.Model):
     
 class RenovationFaite(models.Model):
     id = models.AutoField(primary_key=True)
-    client = models.ForeignKey(Client, null=True, on_delete=models.PROTECT)
+    client = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     budget2 = models.ForeignKey(Paiement,  on_delete=models.PROTECT)  
     image = models.ImageField(upload_to='fin_travaux/',null=True,blank=True)

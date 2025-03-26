@@ -3,11 +3,8 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-4">Modifier un Produit</h1>
-    <form id="editProduitForm">
+    <h1 class="text-center mb-4">Modifier un Produit</h1><form method="post" action="{% url 'edit_produit' produit.id %}">
         {% csrf_token %}
-        <input type="hidden" id="produit_id" value="{{ produit.id }}">
-
         <div class="form-group mt-3">
             <label for="nom">Nom du Produit</label>
             <input type="text" name="nom" id="nom" class="form-control" value="{{ produit.nom }}" required>
@@ -35,6 +32,7 @@ $(document).ready(function () {
     $('#editProduitForm').submit(function (e) {
         e.preventDefault();
 
+        let produitId = $('#produit_id').val();  // Récupérer l'ID du produit
         let formData = {
             nom: $('#nom').val(),
             unite: $('#unite').val(),
@@ -43,16 +41,19 @@ $(document).ready(function () {
         };
         
         $.ajax({
-            url: "{% url 'edit_produit' produit.id %}",
+            url: `{% url 'edit_produit' produit.id %}`,  // URL correcte
             type: "POST",
             data: formData,
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
-                    window.location.href = "{% url 'filtrer_produit' %}";
+                    window.location.href = window.location.origin + "{% url 'filtrer_produit' %}";  // Rediriger vers la liste
                 } else {
                     alert("Erreur : " + JSON.stringify(response.errors));
                 }
+            },
+            error: function () {
+                alert("Une erreur s'est produite lors de la mise à jour.");
             }
         });
     });
