@@ -25,10 +25,14 @@
 
         /* Style pour les menus déroulants */
         .dropdown-menu {
-            border-radius: 10px;
-            background-color: #f8f9fa;
+            border-radius: 30px;
+            background-color: #f8f9fa; 
+            transition: transform 0.7s ease, box-shadow 0.3s ease;
+            border-radius: 30px !important; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border: 2px solid #007bff;
             display: none;
+            overflow: hidden; 
             position: absolute;
             top: 100%;
             left: 0;
@@ -37,8 +41,8 @@
 
         /* Style pour les items du menu déroulant */
         .dropdown-item {
-            color: #333;
-            transition: color 0.3s ease;
+            color: #252525;
+            transition: color 1s ease;
         }
 
         .dropdown-item:hover {
