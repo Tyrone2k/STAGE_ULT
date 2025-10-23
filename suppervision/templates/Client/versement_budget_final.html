@@ -1,0 +1,267 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow p-4">
+                <div class="card-body">
+                    <h2 class="text-center mb-4"><i class="fas fa-university"></i> Versement Bancaire - Paiement Final</h2>
+                    
+                    <div class="row">
+                        <!-- Informations bancaires -->
+                        <div class="col-md-6">
+                            <div class="card bg-light h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-info-circle"></i> Informations de Paiement Final</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Montant final à verser:</strong></h6>
+                                    <p class="text-success fs-3"><strong>{{ montant_final }} BIF</strong></p>
+                                    
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-trophy"></i>
+                                        <strong>Paiement Final!</strong> Ce versement finalise complètement votre projet.
+                                    </div>
+                                    
+                                    <h6><strong>Coordonnées bancaires:</strong></h6>
+                                    <div class="border p-3 rounded bg-white">
+                                        <p><strong>Banque:</strong> Banque de Crédit de Bujumbura (BCB)</p>
+                                        <p><strong>Numéro de compte:</strong> 12345-67890-ABC</p>
+                                        <p><strong>Nom du bénéficiaire:</strong> RENOVATION IMMOBILIERE SARL</p>
+                                        <p><strong>Code SWIFT:</strong> BCBUBIBJ</p>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning mt-3">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>Important:</strong> Mentionnez "FINAL-{{ user.id }}-{{ projet.id }}" comme référence lors du virement.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload du justificatif -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5><i class="fas fa-upload"></i> Justificatif de Paiement Final</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" enctype="multipart/form-data" id="uploadFinalForm">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="justificatif" class="form-label">
+                                                <i class="fas fa-file-image"></i> Télécharger le justificatif
+                                            </label>
+                                            <input type="file" class="form-control" id="justificatif" name="justificatif" 
+                                                   accept="image/*,.pdf" required>
+                                            <div class="form-text">
+                                                Formats acceptés: JPG, PNG, PDF (Max: 10MB pour le paiement final)
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="reference" class="form-label">Référence du virement final</label>
+                                            <input type="text" class="form-control" id="reference" name="reference" 
+                                                   value="FINAL-{{ user.id }}-{{ projet.id }}" readonly>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="commentaire" class="form-label">Commentaire (optionnel)</label>
+                                            <textarea class="form-control" id="commentaire" name="commentaire" 
+                                                      rows="3" placeholder="Commentaires sur le paiement final..."></textarea>
+                                        </div>
+                                        
+                                        <!-- Confirmation finale -->
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="confirmFinal" required>
+                                                <label class="form-check-label" for="confirmFinal">
+                                                    <strong>Je confirme que ce paiement finalise mon projet de rénovation</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <button type="submit" class="card-btn4">
+                                                <i class="fas fa-paper-plane"></i> Finaliser le Projet
+                                            </button>
+                                        </div>
+                                    </form>
+                                    
+                                    <div id="message" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étapes de finalisation -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card bg-success text-white">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-list-ol"></i> Étapes de Finalisation du Projet</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-university fa-2x mb-2"></i>
+                                                <h6>1. Virement Final</h6>
+                                                <p class="small">Effectuer le virement du solde</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-upload fa-2x mb-2"></i>
+                                                <h6>2. Upload Justificatif</h6>
+                                                <p class="small">Télécharger la preuve de paiement</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                                <h6>3. Validation</h6>
+                                                <p class="small">Validation sous 24h</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-certificate fa-2x mb-2"></i>
+                                                <h6>4. Certificats</h6>
+                                                <p class="small">Émission des documents</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-handshake fa-2x mb-2"></i>
+                                                <h6>5. Livraison</h6>
+                                                <p class="small">Remise officielle du projet</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <div class="step">
+                                                <i class="fas fa-tools fa-2x mb-2"></i>
+                                                <h6>6. SAV Actif</h6>
+                                                <p class="small">Service après-vente activé</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents à recevoir -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-file-alt"></i> Documents que vous recevrez</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-certificate text-success"></i> Certificats:</h6>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Certificat de conformité</li>
+                                                <li><i class="fas fa-check text-success"></i> Garantie 2 ans</li>
+                                                <li><i class="fas fa-check text-success"></i> Certificat de fin de travaux</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-folder text-warning"></i> Dossier technique:</h6>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Plans as-built</li>
+                                                <li><i class="fas fa-check text-success"></i> Notice d'entretien</li>
+                                                <li><i class="fas fa-check text-success"></i> Fiches techniques matériaux</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-headset text-info"></i> Services:</h6>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-check text-success"></i> Accès SAV 24/7</li>
+                                                <li><i class="fas fa-check text-success"></i> Maintenance préventive</li>
+                                                <li><i class="fas fa-check text-success"></i> Support technique</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'budget_final_paiement' %}" class="card-btn1">
+                            <i class="fas fa-arrow-left"></i> Retour aux Options
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#uploadFinalForm').submit(function(e) {
+        e.preventDefault();
+        
+        if (!$('#confirmFinal').is(':checked')) {
+            alert('Veuillez confirmer que ce paiement finalise votre projet.');
+            return;
+        }
+        
+        let formData = new FormData(this);
+        
+        // Afficher une confirmation spéciale pour le paiement final
+        if (confirm('ATTENTION: Ce paiement finalise définitivement votre projet de rénovation.\n\nÊtes-vous sûr de vouloir continuer?')) {
+            $.ajax({
+                url: "{% url 'versement_budget_final' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $('#message').html('<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Traitement du paiement final en cours...</div>');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#message').html('<div class="alert alert-success"><i class="fas fa-trophy"></i> <strong>Félicitations!</strong> ' + response.message + '</div>');
+                        $('#uploadFinalForm')[0].reset();
+                        
+                        // Redirection spéciale pour le paiement final
+                        setTimeout(function() {
+                            window.location.href = "{% url 'paiement_success' 'final' %}";
+                        }, 3000);
+                    } else {
+                        $('#message').html('<div class="alert alert-danger"><i class="fas fa-times"></i> ' + response.message + '</div>');
+                    }
+                },
+                error: function() {
+                    $('#message').html('<div class="alert alert-danger"><i class="fas fa-times"></i> Erreur lors du traitement du paiement final.</div>');
+                }
+            });
+        }
+    });
+    
+    // Validation du fichier (taille augmentée pour le paiement final)
+    $('#justificatif').change(function() {
+        let file = this.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) { // 10MB pour le paiement final
+                alert('Le fichier est trop volumineux. Taille maximale: 10MB');
+                $(this).val('');
+            }
+        }
+    });
+    
+    // Animation spéciale pour le paiement final
+    $('.card').addClass('border-success');
+    $('h2').addClass('text-success');
+});
+</script>
+
+{% endblock %}

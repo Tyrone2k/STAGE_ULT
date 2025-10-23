@@ -1,0 +1,253 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mx-auto shadow p-4">
+                <div class="card-body text-center">
+                    <h2 class="mb-4"><i class="fas fa-receipt"></i> Paiement Final - Solde Total</h2>
+                    <p class="text-muted mb-4">Montant final à payer: <strong>{{ montant_final }} BIF</strong></p>
+                    
+                    <!-- Récapitulatif des paiements -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calculator"></i> Récapitulatif des Paiements</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-start">
+                                <div class="col-md-6">
+                                    <p><strong>Coût total du projet:</strong> {{ cout_total }} BIF</p>
+                                    <p><strong>Budget d'avance payé:</strong> -{{ budget_avance }} BIF</p>
+                                    <p><strong>Visite payée:</strong> -{{ visite_payee }} BIF</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Autres frais:</strong> {{ autres_frais }} BIF</p>
+                                    <p><strong>TVA (18%):</strong> {{ tva }} BIF</p>
+                                    <hr>
+                                    <p class="text-primary fs-5"><strong>Solde à payer:</strong> {{ montant_final }} BIF</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Option PayPal -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fab fa-paypal fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">PayPal</h5>
+                                    <p class="card-text">Paiement sécurisé et instantané via PayPal</p>
+                                    <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                        <input type="hidden" name="cmd" value="_xclick">
+                                        <input type="hidden" name="business" value="sb-47jbkn25869203@business.example.com">
+                                        <input type="hidden" name="item_name" value="Paiement Final - Rénovation Complète">
+                                        <input type="hidden" name="amount" value="{{ montant_final_usd }}">
+                                        <input type="hidden" name="currency_code" value="USD">
+                                        <input type="hidden" name="return" value="{{ request.build_absolute_uri }}{% url 'paiement_success' 'final' %}?payment=success">
+                                        <input type="hidden" name="cancel_return" value="{{ request.build_absolute_uri }}{% url 'budget_final_paiement' %}?payment=cancelled">
+                                        <!-- <input type="hidden" name="notify_url" value="{{ request.build_absolute_uri }}{% url 'paypal_ipn' %}"> -->
+                                        <input type="hidden" name="custom" value="budget_final_{{ user.id }}">
+                                        <button type="submit" class="card-btn">
+                                            <i class="fab fa-paypal"></i> Payer avec PayPal
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Option Versement Bancaire -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-university fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">Versement Bancaire</h5>
+                                    <p class="card-text">Virement bancaire traditionnel avec justificatif</p>
+                                    <a href="{% url 'versement_budget_final' %}" class="card-btn4">
+                                        <i class="fas fa-money-bill-wave"></i> Versement Bancaire
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'client-home' %}" class="card-btn1">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informations sur le paiement final -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-light">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-info-circle"></i> Finalisation du Projet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Ce paiement final comprend:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary"></i> Solde des travaux réalisés</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Finitions et retouches</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Nettoyage final</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Garantie des travaux (2 ans)</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Certificat de conformité</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-gift text-warning"></i> Avantages inclus:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary"></i> Service après-vente gratuit</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Maintenance préventive (6 mois)</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Conseils d'entretien personnalisés</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Support technique 24/7</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Remise sur futurs projets (10%)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-trophy"></i>
+                        <strong>Félicitations!</strong> Vous êtes sur le point de finaliser votre projet de rénovation. 
+                        Après ce paiement, vous recevrez tous les documents de fin de chantier et la garantie complète.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conditions de paiement -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Conditions Importantes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6><strong>Modalités de paiement final:</strong></h6>
+                            <ul class="small">
+                                <li>Le paiement final doit être effectué avant la livraison définitive du projet</li>
+                                <li>Une fois le paiement validé, vous disposez de 48h pour signaler d'éventuelles réserves</li>
+                                <li>La garantie de 2 ans prend effet dès réception du paiement final</li>
+                                <li>Un certificat de conformité vous sera remis sous 5 jours ouvrables</li>
+                                <li>Le service après-vente est activé immédiatement après paiement</li>
+                            </ul>
+                            
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="acceptConditions" required>
+                                <label class="form-check-label" for="acceptConditions">
+                                    <strong>J'accepte les conditions de paiement final et de livraison du projet</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation PayPal -->
+<div class="modal fade" id="paypalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation du Paiement Final</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vous allez être redirigé vers PayPal pour effectuer le paiement final de <strong>{{ montant_final }} BIF</strong>.</p>
+                <p class="text-success"><strong>Ce paiement finalise complètement votre projet de rénovation!</strong></p>
+                <p class="text-muted">Une fois le paiement validé, vous recevrez:</p>
+                <ul class="text-muted">
+                    <li>Confirmation de fin de projet</li>
+                    <li>Certificat de garantie</li>
+                    <li>Documents de conformité</li>
+                    <li>Activation du service après-vente</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="submitFinalPayPalForm()">Finaliser le Paiement</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Vérifier que les conditions sont acceptées avant le paiement
+document.addEventListener('DOMContentLoaded', function() {
+    const paypalBtn = document.querySelector('button[type="submit"]');
+    const versementBtn = document.querySelector('a[href*="versement_budget_final"]');
+    const conditionsCheck = document.getElementById('acceptConditions');
+    
+    function togglePaymentButtons() {
+        const isChecked = conditionsCheck.checked;
+        paypalBtn.disabled = !isChecked;
+        
+        if (isChecked) {
+            paypalBtn.classList.remove('disabled');
+            versementBtn.classList.remove('disabled');
+            paypalBtn.style.opacity = '1';
+            versementBtn.style.opacity = '1';
+        } else {
+            paypalBtn.classList.add('disabled');
+            versementBtn.classList.add('disabled');
+            paypalBtn.style.opacity = '0.5';
+            versementBtn.style.opacity = '0.5';
+        }
+    }
+    
+    conditionsCheck.addEventListener('change', togglePaymentButtons);
+    togglePaymentButtons(); // Initial state
+    
+    // Intercepter le clic sur le versement bancaire
+    versementBtn.addEventListener('click', function(e) {
+        if (!conditionsCheck.checked) {
+            e.preventDefault();
+            alert('Veuillez accepter les conditions de paiement final avant de continuer.');
+        }
+    });
+});
+
+function showFinalPayPalModal() {
+    const conditionsCheck = document.getElementById('acceptConditions');
+    if (!conditionsCheck.checked) {
+        alert('Veuillez accepter les conditions de paiement final avant de continuer.');
+        return;
+    }
+    $('#paypalModal').modal('show');
+}
+
+function submitFinalPayPalForm() {
+    document.querySelector('form[action*="paypal"]').submit();
+}
+
+// Afficher un message si le paiement a été annulé
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('payment') === 'cancelled') {
+    alert('Paiement final annulé. Vous pouvez réessayer quand vous le souhaitez.');
+}
+
+// Modifier le comportement du bouton PayPal
+document.querySelector('form[action*="paypal"] button').addEventListener('click', function(e) {
+    e.preventDefault();
+    showFinalPayPalModal();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+    <script src="{% static 'dist/js/bootstrap.bundle.js' %}"></script>
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <meta name="theme-color" content="#7952b3">
+    <title>Rénovation Immobilière - Page Client</title>
+    <style>
+        .nav-link {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333 !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #007bff !important;
+        }
+
+        /* Style pour les menus déroulants */
+        .dropdown-menu {
+            border-radius: 30px;
+            background-color: #f8f9fa; 
+            transition: transform 0.7s ease, box-shadow 0.3s ease;
+            border-radius: 30px !important; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid #007bff;
+            display: none;
+            overflow: hidden; 
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* Style pour les items du menu déroulant */
+        .dropdown-item {
+            color: #252525;
+            transition: color 1s ease;
+        }
+
+        .dropdown-item:hover {
+            color: #007bff;
+            background-color: #e9ecef;
+        }
+
+        /* Afficher le menu déroulant au survol */
+        .nav-item:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Icône de profil */
+        .profile-icon {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .profile-icon:hover {
+            color: #007bff;
+        }
+
+        /* Assurez-vous que le menu reste visible sur mobile */
+        @media (max-width: 992px) {
+            .dropdown-menu {
+                display: none !important;
+            }
+            .nav-item:hover .dropdown-menu {
+                display: none !important;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du hover pour les menus déroulants
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const dropdown = this.querySelector('.dropdown-menu');
+                    if (dropdown) {
+                        dropdown.style.display = 'block';
+                    }
+                });
+                item.addEventListener('mouseleave', function() {
+                    const dropdown = this.querySelector('.dropdown-menu');
+                    if (dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            });
+
+            // Cacher le menu si clic en dehors
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-item')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <header class="site-header sticky-top bg-light shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand" href="{% url 'client-home' %}" aria-label="Logo">
+                    <img src="{% static 'images/logo.jpg' %}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                </a>
+
+                <!-- Toggler for Mobile -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Menu Items in the middle -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'client-home' %}">Menu</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{% url 'client_galerie' %}" id="galerieMenu">Galérie</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'client_orders' %}">Panier</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" id="paiementMenu">Paiement</a>
+                            <ul class="dropdown-menu" id="paiementSubmenu">
+                                <li><a class="dropdown-item" href="{% url 'visite_local' %}">Visite du local</a></li>
+                                <li><a class="dropdown-item" href="{% url 'budget_avance_paiement' %}">Budget d'avance</a></li>
+                                <li><a class="dropdown-item" href="{% url 'budget_final_paiement' %}">Budget final</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Profile menu on the right -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" href="#" id="profileMenu">
+                            <i class="fas fa-user-circle profile-icon"></i>
+                            <h6><strong> {{ user.last_name }} {{ user.first_name }} </strong></h6>
+                        </a>
+                        <ul class="dropdown-menu" id="profileSubmenu">
+                            <li><a class="dropdown-item" href="{% url 'view_profile' %}">View profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'client_orders' %}">Panier</a></li>
+                            <li><a class="dropdown-item" href="#">Notification</a></li>
+                            <li><a class="dropdown-item" href="/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+</body>
+</html>

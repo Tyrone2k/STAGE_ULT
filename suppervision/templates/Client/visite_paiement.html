@@ -1,0 +1,160 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+
+<div class="container my-5">
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body text-center">
+            <h3 class="text-center mb-4">Paiement - Visite du Local</h3>
+            <p class="mb-4">Choisissez votre mode de paiement pour la visite du local</p>
+            
+            <!-- PayPal Payment Option -->
+            <div class="mb-4">
+                <h5>Option 1: Paiement PayPal</h5>
+                <p>Paiement sécurisé via PayPal</p>
+                <button id="paypal-btn" class="card-btn" onclick="processPayPalPayment()">
+                    <i class="fab fa-paypal"></i> Payer avec PayPal
+                </button>
+            </div>
+            
+            <hr>
+            
+            <!-- Bank Transfer Option -->
+            <div class="mb-4">
+                <h5>Option 2: Versement Bancaire</h5>
+                <p>Paiement par virement bancaire</p>
+                <button class="card-btn2" onclick="showBankTransferDetails()">
+                    <i class="fas fa-university"></i> Versement Bancaire
+                </button>
+            </div>
+            
+            <!-- Bank Transfer Details (Hidden by default) -->
+            <div id="bank-details" class="mt-4" style="display: none;">
+                <div class="card p-3" style="background-color: #f8f9fa;">
+                    <h6><strong>Informations Bancaires</strong></h6>
+                    <p><strong>Banque:</strong> Banque de Crédit du Burundi (BCB)</p>
+                    <p><strong>Numéro de compte:</strong> 12345678901234567890</p>
+                    <p><strong>Nom du bénéficiaire:</strong> Rénovation Immobilière SARL</p>
+                    
+                    <hr>
+                    
+                    <h6><strong>Étapes de paiement:</strong></h6>
+                    <ol class="text-start">
+                        <li>Effectuez le virement sur le compte ci-dessus</li>
+                        <li>Conservez le reçu de transaction</li>
+                        <li>Uploadez la preuve de paiement ci-dessous</li>
+                        <li>Attendez la validation de votre paiement</li>
+                    </ol>
+                    
+                    <!-- File Upload -->
+                    <div class="mt-3">
+                        <label for="payment-proof" class="form-label"><strong>Preuve de paiement:</strong></label>
+                        <input type="file" class="form-control" id="payment-proof" accept="image/*,.pdf">
+                        <small class="text-muted">Formats acceptés: JPG, PNG, PDF (Max: 5MB)</small>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="card-btn2" onclick="uploadPaymentProof()">
+                            <i class="fas fa-upload"></i> Confirmer le Versement
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'paiement' %}" class="card-btn1">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+
+<script>
+// Show/Hide Bank Transfer Details
+function showBankTransferDetails() {
+    const bankDetails = document.getElementById('bank-details');
+    if (bankDetails.style.display === 'none') {
+        bankDetails.style.display = 'block';
+    } else {
+        bankDetails.style.display = 'none';
+    }
+}
+
+// PayPal Payment Processing
+function processPayPalPayment() {
+    // Simulate PayPal payment process
+    const amount = 50; // Amount for visit (you can make this dynamic)
+    
+    if (confirm(`Procéder au paiement PayPal de ${amount} USD pour la visite du local?`)) {
+        // Simulate PayPal API call
+        simulatePayPalPayment(amount);
+    }
+}
+
+function simulatePayPalPayment(amount) {
+    // Show loading
+    const paypalBtn = document.getElementById('paypal-btn');
+    const originalText = paypalBtn.innerHTML;
+    paypalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+    paypalBtn.disabled = true;
+    
+    // Simulate API call delay
+    setTimeout(() => {
+        // Simulate successful payment
+        alert('Paiement PayPal réussi! Redirection vers la liste des projets...');
+        
+        // Redirect to liste_projet.html
+        window.location.href = "{% url 'liste_projet' %}";
+    }, 3000);
+}
+
+// Upload Payment Proof
+function uploadPaymentProof() {
+    const fileInput = document.getElementById('payment-proof');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Veuillez sélectionner un fichier de preuve de paiement.');
+        return;
+    }
+    
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Le fichier est trop volumineux. Taille maximale: 5MB');
+        return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Format de fichier non supporté. Utilisez JPG, PNG ou PDF.');
+        return;
+    }
+    
+    // Simulate file upload
+    const uploadBtn = event.target;
+    const originalText = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload...';
+    uploadBtn.disabled = true;
+    
+    setTimeout(() => {
+        alert('Preuve de paiement uploadée avec succès! Votre paiement sera vérifié sous 24h.');
+        uploadBtn.innerHTML = '<i class="fas fa-check"></i> Confirmé';
+        uploadBtn.classList.remove('card-btn2');
+        uploadBtn.classList.add('card-btn');
+        
+        // Redirect after confirmation
+        setTimeout(() => {
+            window.location.href = "{% url 'client-home' %}";
+        }, 2000);
+    }, 2000);
+}
+</script>
+
+{% endblock %}

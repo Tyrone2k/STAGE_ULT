@@ -1,0 +1,296 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Supprimer un Produit</h1>
+    
+    <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card-body">
+            <form method="post" action="{% url 'delete_produit' %}" id="deleteProductForm">
+                {% csrf_token %}
+                
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="category_produit" class="form-label">Catégorie du Produit</label>
+                        <select name="category_produit" id="id_category_produit" class="form-control">
+                            <option value="">Sélectionner une catégorie</option>
+                            {% for cat in categories_produit %}
+                            <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="search_product" class="form-label">Rechercher un produit</label>
+                        <input type="text" id="search_product" class="form-control" placeholder="Tapez le nom du produit...">
+                    </div>
+                </div>
+
+                <!-- Product Selection -->
+                <div class="form-group mb-3">
+                    <label for="produit" class="form-label">Produit à supprimer</label>
+                    <select name="produit" id="id_produit" class="form-control" disabled>
+                        <option value="">Sélectionner un produit</option>
+                    </select>
+                </div>
+
+                <!-- Product Details Display -->
+                <div id="product-details" class="alert alert-info" style="display: none;">
+                    <h6><strong>Détails du produit sélectionné:</strong></h6>
+                    <div id="product-info"></div>
+                </div>
+
+                <!-- Confirmation Section -->
+                <div class="form-group mb-3" id="confirmation-section" style="display: none;">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Attention!</h6>
+                        <p>La suppression de ce produit est <strong>irréversible</strong>. Toutes les données associées seront perdues.</p>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirm_deletion">
+                            <label class="form-check-label" for="confirm_deletion">
+                                Je confirme vouloir supprimer définitivement ce produit
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="card-btn4" id="delete-btn" disabled>
+                        <i class="fas fa-trash"></i> Supprimer Définitivement
+                    </button>
+                    <a href="{% url 'manage_produit' %}" class="card-btn1">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products List for Reference -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5><i class="fas fa-list"></i> Liste des Produits Disponibles</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" id="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Catégorie</th>
+                            <th>Prix</th>
+                            <th>Unité</th>
+                            <th>Action Rapide</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample data - In real implementation, this would come from Django context -->
+                        <tr data-product-id="1" data-category="1">
+                            <td>1</td>
+                            <td>Carrelage Blanc</td>
+                            <td>Carrelage</td>
+                            <td>25.00 BIF</td>
+                            <td>m²</td>
+                            <td>
+                                <button class="form-btn btn3" onclick="quickDelete(1, 'Carrelage Blanc')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </td>
+                        </tr>
+                        <tr data-product-id="2" data-category="2">
+                            <td>2</td>
+                            <td>Peinture Murale</td>
+                            <td>Peinture</td>
+                            <td>15.50 BIF</td>
+                            <td>L</td>
+                            <td>
+                                <button class="form-btn btn3" onclick="quickDelete(2, 'Peinture Murale')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </td>
+                        </tr>
+                        <tr data-product-id="3" data-category="1">
+                            <td>3</td>
+                            <td>Parquet Chêne</td>
+                            <td>Revêtement</td>
+                            <td>45.00 BIF</td>
+                            <td>m²</td>
+                            <td>
+                                <button class="form-btn btn3" onclick="quickDelete(3, 'Parquet Chêne')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Category change handler
+    $('#id_category_produit').change(function() {
+        const categoryId = $(this).val();
+        const productSelect = $('#id_produit');
+        
+        if (categoryId) {
+            productSelect.prop('disabled', false);
+            loadProductsByCategory(categoryId);
+        } else {
+            productSelect.prop('disabled', true).html('<option value="">Sélectionner un produit</option>');
+            hideProductDetails();
+        }
+    });
+
+    // Product selection handler
+    $('#id_produit').change(function() {
+        const productId = $(this).val();
+        if (productId) {
+            showProductDetails(productId);
+            $('#confirmation-section').show();
+        } else {
+            hideProductDetails();
+            $('#confirmation-section').hide();
+        }
+        updateDeleteButton();
+    });
+
+    // Confirmation checkbox handler
+    $('#confirm_deletion').change(function() {
+        updateDeleteButton();
+    });
+
+    // Search functionality
+    $('#search_product').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        $('#products-table tbody tr').each(function() {
+            const productName = $(this).find('td:nth-child(2)').text().toLowerCase();
+            $(this).toggle(productName.includes(searchTerm));
+        });
+    });
+
+    // Form submission handler
+    $('#deleteProductForm').submit(function(e) {
+        e.preventDefault();
+        
+        const productId = $('#id_produit').val();
+        const productName = $('#id_produit option:selected').text();
+        
+        if (!productId) {
+            alert('Veuillez sélectionner un produit à supprimer.');
+            return;
+        }
+
+        if (!$('#confirm_deletion').is(':checked')) {
+            alert('Veuillez confirmer la suppression en cochant la case.');
+            return;
+        }
+
+        if (confirm(`Êtes-vous absolument sûr de vouloir supprimer "${productName}"?\n\nCette action est irréversible!`)) {
+            performDeletion(productId, productName);
+        }
+    });
+});
+
+function loadProductsByCategory(categoryId) {
+    // Simulate loading products by category
+    // In real implementation, this would be an AJAX call to Django view
+    const sampleProducts = {
+        '1': [
+            {id: 1, name: 'Carrelage Blanc'},
+            {id: 3, name: 'Parquet Chêne'}
+        ],
+        '2': [
+            {id: 2, name: 'Peinture Murale'},
+            {id: 4, name: 'Peinture Plafond'}
+        ]
+    };
+
+    const products = sampleProducts[categoryId] || [];
+    const productSelect = $('#id_produit');
+    
+    productSelect.html('<option value="">Sélectionner un produit</option>');
+    
+    products.forEach(product => {
+        productSelect.append(`<option value="${product.id}">${product.name}</option>`);
+    });
+}
+
+function showProductDetails(productId) {
+    // Simulate showing product details
+    // In real implementation, this would fetch data from server
+    const productDetails = {
+        '1': {name: 'Carrelage Blanc', category: 'Carrelage', price: '25.00 BIF', unit: 'm²', stock: '150'},
+        '2': {name: 'Peinture Murale', category: 'Peinture', price: '15.50 BIF', unit: 'L', stock: '75'},
+        '3': {name: 'Parquet Chêne', category: 'Revêtement', price: '45.00 BIF', unit: 'm²', stock: '200'}
+    };
+
+    const product = productDetails[productId];
+    if (product) {
+        $('#product-info').html(`
+            <p><strong>Nom:</strong> ${product.name}</p>
+            <p><strong>Catégorie:</strong> ${product.category}</p>
+            <p><strong>Prix:</strong> ${product.price}</p>
+            <p><strong>Unité:</strong> ${product.unit}</p>
+            <p><strong>Stock actuel:</strong> ${product.stock} unités</p>
+        `);
+        $('#product-details').show();
+    }
+}
+
+function hideProductDetails() {
+    $('#product-details').hide();
+    $('#confirmation-section').hide();
+}
+
+function updateDeleteButton() {
+    const productSelected = $('#id_produit').val();
+    const confirmationChecked = $('#confirm_deletion').is(':checked');
+    
+    $('#delete-btn').prop('disabled', !(productSelected && confirmationChecked));
+}
+
+function quickDelete(productId, productName) {
+    if (confirm(`Supprimer rapidement "${productName}"?\n\nCette action est irréversible!`)) {
+        performDeletion(productId, productName);
+    }
+}
+
+function performDeletion(productId, productName) {
+    // Show loading state
+    const deleteBtn = $('#delete-btn');
+    const originalText = deleteBtn.html();
+    deleteBtn.html('<i class="fas fa-spinner fa-spin"></i> Suppression...').prop('disabled', true);
+
+    // Simulate AJAX deletion
+    setTimeout(() => {
+        // Simulate successful deletion
+        alert(`Produit "${productName}" supprimé avec succès!`);
+        
+        // Remove from table if it exists
+        $(`#products-table tr[data-product-id="${productId}"]`).fadeOut();
+        
+        // Reset form
+        $('#deleteProductForm')[0].reset();
+        $('#id_produit').prop('disabled', true);
+        hideProductDetails();
+        
+        // Reset button
+        deleteBtn.html(originalText).prop('disabled', true);
+        
+        // In real implementation, you would redirect or reload
+        // window.location.href = "{% url 'manage_produit' %}";
+    }, 2000);
+}
+</script>
+
+{% endblock %}

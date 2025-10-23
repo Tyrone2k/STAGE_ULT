@@ -1,0 +1,106 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Sélectionner un Produit</h1>
+    <div class="card mx-auto shadow p-4" style="max-width: 600px;">
+        <form method="get" action="#">
+            {% csrf_token %}
+
+            <!-- Filtrer par catégorie de produit -->
+            <div class="mb-3">
+                <label for="id_category_produit">Filtrer par Catégorie</label>
+                <select name="category_produit" id="id_category_produit" class="form-control">
+                    <option value="">Toutes</option>
+                    {% for cat in categories_produit %}
+                    <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Sélection du produit -->
+            <div class="mb-3">
+                <label for="id_produit">Sélectionner un Produit</label>
+                <select name="produit" id="id_produit" class="form-control">
+                    <option value="">Sélectionner un produit</option>
+                    {% for produit in produits_all %}
+                    <option value="{{ produit.id }}">{{ produit.nom }} - {{ produit.unite }} - {{ produit.prix }}€</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="text-center">
+                <a id="editBtn" href="#" class="card-btn2" aria-disabled="true">Modifier</a>
+                <a href="{% url 'manage_produit' %}" class="card-btn1">Retour</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    // Désactiver le lien Modifier au chargement
+    const disableEditLink = () => {
+        $('#editBtn').attr('href', '#').attr('aria-disabled', 'true').addClass('disabled');
+    };
+    const enableEditLink = (url) => {
+        $('#editBtn').attr('href', url).attr('aria-disabled', 'false').removeClass('disabled');
+    };
+    disableEditLink();
+
+    // Filtrage des produits par catégorie
+    $('#id_category_produit').change(function () {
+        let categoryId = $(this).val();
+        $('#id_produit').empty().append('<option value="">Sélectionner un produit</option>'); // Réinitialisation
+
+        // Réinitialiser le lien Modifier lorsque la catégorie change
+        disableEditLink();
+
+        if (categoryId) {
+            $.ajax({
+                url: "{% url 'get_products_by_category' %}",
+                type: "GET",
+                data: { category_id: categoryId },
+                success: function (data) {
+                    if (data.produits.length > 0) {
+                        $.each(data.produits, function (index, produit) {
+                            // Conserver un libellé riche si disponible
+                            let label = produit.nom || '';
+                            if (produit.unite) { label += ` - ${produit.unite}`; }
+                            if (produit.prix) { label += ` - ${produit.prix}€`; }
+                            $('#id_produit').append(`<option value="${produit.id}">${label}</option>`);
+                        });
+                        // Forcer une réinitialisation de l'état du lien après rechargement
+                        $('#id_produit').trigger('change');
+                    } else {
+                        alert("Aucun produit trouvé pour cette catégorie.");
+                    }
+                },
+                error: function () {
+                    alert("Erreur lors du chargement des produits.");
+                }
+            });
+        } else {
+            // Si aucune catégorie, réinitialiser le lien et la sélection
+            $('#id_produit').val('');
+            disableEditLink();
+        }
+    });
+
+    // Activation du lien Modifier avec redirection correcte
+    $('#id_produit').change(function () {
+        let produitId = $(this).val();
+        let editUrlPattern = "{% url 'edit_produit' 999999 %}";  // Modèle d'URL
+        let editUrl = editUrlPattern.replace("999999", produitId);
+
+        if (produitId) {
+            enableEditLink(editUrl);
+        } else {
+            disableEditLink();
+        }
+    });
+});
+</script>
+{% endblock %}
