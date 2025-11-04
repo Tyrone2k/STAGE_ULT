@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'widget_tweaks',
     'suppervision',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,6 @@ LOGOUT_REDIRECT_URL = '/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+PAYPAL_RECEIVER_EMAIL = 'gastephane0@gmail.com'
+PAYPAL_TEST = True

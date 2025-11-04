@@ -4,6 +4,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.http import JsonResponse, HttpResponseNotFound
+from django.conf import settings
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
