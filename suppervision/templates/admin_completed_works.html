@@ -1,0 +1,121 @@
+{% extends "adminbase.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+<div class="container my-5">
+    <h1 class="text-center mb-4">Travaux Finalisés</h1>
+    <a href="{% url 'admin_dashboard' %}" class="card-btn1">← Retour</a><br><br>
+    
+    <!-- Section des Rénovations Finalisées -->
+    <div class="card shadow p-4 mb-4">
+        <h3 class="mb-3"><i class="fas fa-home"></i> Rénovations Finalisées</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Superviseur</th>
+                    <th>Description</th>
+                    <th>Date de création</th>
+                    <th>Budget</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for renovation in completed_renovations %}
+                <tr>
+                    <td>{{ renovation.id }}</td>
+                    <td>
+                        {% if renovation.client %}
+                            {{ renovation.client.first_name }} {{ renovation.client.last_name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if renovation.budget2.created_by %}
+                            {{ renovation.budget2.created_by.first_name }} {{ renovation.budget2.created_by.last_name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ renovation.description|default:"Aucune description" }}</td>
+                    <td>{{ renovation.created_at|date:'j M Y H:i' }}</td>
+                    <td>{{ renovation.budget2.montant }} BIF</td>
+                    <td>
+                        <span class="badge bg-success">Finalisé</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">Aucune rénovation finalisée trouvée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Section des Projets de Supervision -->
+    <div class="card shadow p-4">
+        <h3 class="mb-3"><i class="fas fa-hard-hat"></i> Projets de Supervision en Cours</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Superviseur</th>
+                    <th>Description</th>
+                    <th>Date de création</th>
+                    <th>Budget avancé</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for projet in supervision_projects %}
+                <tr>
+                    <td>{{ projet.id }}</td>
+                    <td>
+                        {% if projet.client %}
+                            {{ projet.client.first_name }} {{ projet.client.last_name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if projet.budget1.created_by %}
+                            {{ projet.budget1.created_by.first_name }} {{ projet.budget1.created_by.last_name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ projet.description|default:"En cours..." }}</td>
+                    <td>{{ projet.created_at|date:'j M Y H:i' }}</td>
+                    <td>{{ projet.budget1.montant }} BIF</td>
+                    <td>
+                        <span class="badge bg-success">Payé</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucun projet en cours trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    .btn-sm {
+        padding: 4px 10px;
+    }
+    h3 i {
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}

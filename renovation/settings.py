@@ -68,7 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages', 
             ],
         },
     },
@@ -145,5 +145,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-PAYPAL_RECEIVER_EMAIL = 'gastephane0@gmail.com'
-PAYPAL_TEST = True
+# Configuration PayPal Sandbox
+PAYPAL_CLIENT_ID = 'AWWg7vOaTqImmhXCWK7GUWRQQbhEpFATgnbSTEvL3Z66BqDvteuGKIf-2KOzK6WsRrfhsHx11M5KV3Z0'  
+PAYPAL_CLIENT_SECRET = 'EFbMKvG_WyQXxipOgU78Xa71PbQNfMQSyq3JKMIJ75LKcuw5hJtXP4Z2XgjkxflgZo5uQ6SfYg2xsZN1'  
+PAYPAL_MODE = 'sandbox'  # 'live' pour la production
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]

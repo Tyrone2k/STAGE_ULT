@@ -5,8 +5,7 @@
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
 <div class="container my-5">
     <h1 class="text-center mb-4">Liste des Projets</h1>
-    <a href="{% url 'superviseur_dashboard' %}" class="card-btn1">← Retour</a>   
-    <a href="#" class="card-btn">Ajouter un projet</a><br><br>
+    <a href="{% url 'superviseur_dashboard' %}" class="card-btn1">← Retour</a><br><br>
     <div class="card  text-center shadow p-4">
         <table class="table table-striped">
             <thead>
@@ -16,6 +15,7 @@
                     <th>Date </th>
                     <th>Description</th>
                     <th>Budget d'avance</th>
+                    <th>Justificatif</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -23,10 +23,19 @@
                 {% for projet in projets %}
                 <tr>
                     <td>{{ projet.id }}</td>
-                    <td>{{ projet.client.user.last_name }} {{ projet.client.user.last_name }}</td>
+                    <td>{{ projet.client.username }}</td>
                     <td>{{ projet.created_at|date:'j M Y H:i' }}</td>
                     <td>{{ projet.description|truncatechars:50 }}</td>
                     <td>{{ projet.budget1.montant }} BIF</td>
+                    <td>
+                        {% if projet.justificatif %}
+                            <a href="{{ projet.justificatif.url }}" target="_blank" class="btn btn-sm btn-success">
+                                <i class="fas fa-file-download"></i> Voir
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="#" class="form-btn btn2">Détails</a>
                         <a href="#" class="form-btn btn1">Terminé</a>
@@ -34,7 +43,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">Aucune rénovation enregistrée.</td>
+                    <td colspan="7">Aucune rénovation enregistrée.</td>
                 </tr>
                 {% endfor %}
             </tbody>

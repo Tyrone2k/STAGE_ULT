@@ -1,9 +1,16 @@
+import os
+import logging
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.views import LogoutView
-from django.urls import path
+from django.urls import path, reverse
+import paypalrestsdk
 from django.http import JsonResponse, HttpResponseNotFound
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
 from django.conf import settings
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -17,9 +24,11 @@ from .models import*
 from .forms import*
 from django.db.models import Sum, Count
 import hashlib
-from django.utils import timezone
+from time import time
 from django.contrib import messages
 # import geocoder
+
+logger = logging.getLogger(__name__)
 
 # Fonctions utilitaires pour vérifier les rôles
 def is_customer(user):
@@ -305,6 +314,24 @@ def select_category(request, order_id):
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
+def panier(request):
+    client = request.user.client
+    cart_items = ProduitCommande.objects.filter(created_by=client).order_by('id')
+    categories = {}
+    for item in cart_items:
+        cat = item.produit.nom
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append(item)
+    total_price = sum(item.produit.prix for item in cart_items)
+    return render(request, 'Client/panier.html', {'categories': categories, 'total_price': total_price})
+
+@login_required(login_url='login')
+@user_passes_test(is_customer)
+def paiement(request):
+    return render(request, 'Client/paiement.html')
+@login_required(login_url='login')
+@user_passes_test(is_customer)
 def visite_local(request):
     if request.method == 'POST':
         montant = request.POST.get('montant')
@@ -327,39 +354,15 @@ def visite_local(request):
 @user_passes_test(is_customer)
 def visite_paiement(request):
     """
-    Vue pour gérer le paiement de la visite du local
+    Vue pour gérer le paiement de la visite du local avec PayPal
     """
     if request.method == 'POST':
-        # Traitement du paiement PayPal ou virement bancaire
-        type_paiement = request.POST.get('type_paiement')
-        montant = request.POST.get('montant', 50)  # Montant par défaut pour la visite
+        # Utiliser PayPal pour le paiement
+        amount = 100000  
+        description = "Paiement pour visite du local"
+        custom_data = f"visite_{request.user.id}"
         
-        try:
-            # Créer le type de paiement s'il n'existe pas
-            type_paiement_obj, created = TypePaiement.objects.get_or_create(
-                nom='Visite du local'
-            )
-            
-            # Créer un paiement temporaire (sans commande pour l'instant)
-            paiement = Paiement.objects.create(
-                type_paiement=type_paiement_obj,
-                montant=montant,
-                created_by=request.user,
-                commande=None  # Pas de commande associée pour la visite
-            )
-            
-            # Ajouter à la liste d'attente
-            ListeAttente.objects.create(
-                created_by=request.user,
-                client=request.user.client,
-                done=False
-            )
-            
-            messages.success(request, "Paiement de la visite enregistré avec succès!")
-            return redirect('liste_projet')
-            
-        except Exception as e:
-            messages.error(request, f"Erreur lors du traitement du paiement: {str(e)}")
+        return create_paypal_payment(request, 'visite', amount, description, custom_data)
     
     return render(request, 'Client/visite_paiement.html')
 
@@ -367,32 +370,15 @@ def visite_paiement(request):
 @user_passes_test(is_customer)
 def budget_avance_paiement(request):
     """
-    Vue pour gérer le paiement du budget d'avance
+    Vue pour gérer le paiement du budget d'avance avec PayPal
     """
     if request.method == 'POST':
-        # Traitement du paiement PayPal ou virement bancaire
-        type_paiement = request.POST.get('type_paiement')
-        montant = request.POST.get('montant', 500)  # Montant par défaut pour l'avance
+        # Utiliser PayPal pour le paiement
+        amount = 500000  
+        description = "Paiement du budget d'avance"
+        custom_data = f"avance_{request.user.id}"
         
-        try:
-            # Créer le type de paiement s'il n'existe pas
-            type_paiement_obj, created = TypePaiement.objects.get_or_create(
-                nom='Budget d\'avance'
-            )
-            
-            # Créer un paiement temporaire (sans commande pour l'instant)
-            paiement = Paiement.objects.create(
-                type_paiement=type_paiement_obj,
-                montant=montant,
-                created_by=request.user,
-                commande=None  # Pas de commande associée pour l'avance
-            )
-            
-            messages.success(request, "Paiement du budget d'avance enregistré avec succès!")
-            return redirect('liste_renovation')
-            
-        except Exception as e:
-            messages.error(request, f"Erreur lors du traitement du paiement: {str(e)}")
+        return create_paypal_payment(request, 'avance', amount, description, custom_data)
     
     return render(request, 'Client/budget_avance_paiement.html')
 
@@ -400,19 +386,15 @@ def budget_avance_paiement(request):
 @user_passes_test(is_customer)
 def budget_final_paiement(request):
     """
-    Vue pour gérer le paiement du budget final
+    Vue pour gérer le paiement du budget final avec PayPal
     """
-    # Récupérer les informations de paiement du client
-    client = request.user.client
-    
-    # Calculer les montants (exemple de calcul)
-    cout_total = 10000  # Coût total du projet
-    budget_avance = 2000  # Budget d'avance déjà payé
-    visite_payee = 50  # Visite déjà payée
-    autres_frais = 500  # Autres frais
-    tva = int((cout_total - budget_avance - visite_payee + autres_frais) * 0.18)  # TVA 18%
+    # Calculs existants...
+    cout_total = 50000000
+    budget_avance = 25000000
+    visite_payee = 100000
+    autres_frais = 500000
+    tva = int((cout_total - budget_avance - visite_payee + autres_frais) * 0.18)
     montant_final = cout_total - budget_avance - visite_payee + autres_frais + tva
-    montant_final_usd = round(montant_final / 2000, 2)  # Conversion approximative BIF vers USD
     
     context = {
         'cout_total': cout_total,
@@ -421,30 +403,15 @@ def budget_final_paiement(request):
         'autres_frais': autres_frais,
         'tva': tva,
         'montant_final': montant_final,
-        'montant_final_usd': montant_final_usd,
     }
     
     if request.method == 'POST':
-        # Traitement du paiement PayPal
-        try:
-            # Créer le type de paiement s'il n'existe pas
-            type_paiement_obj, created = TypePaiement.objects.get_or_create(
-                nom='Budget final'
-            )
-            
-            # Créer un paiement temporaire
-            paiement = Paiement.objects.create(
-                type_paiement=type_paiement_obj,
-                montant=montant_final,
-                created_by=request.user,
-                commande=None  # Pas de commande associée pour le budget final
-            )
-            
-            messages.success(request, "Paiement du budget final enregistré avec succès!")
-            return redirect('paiement_success', type_paiement='final')
-            
-        except Exception as e:
-            messages.error(request, f"Erreur lors du traitement du paiement: {str(e)}")
+        # Utiliser PayPal pour le paiement final
+        amount = montant_final
+        description = "Paiement final du projet de rénovation"
+        custom_data = f"final_{request.user.id}"
+        
+        return create_paypal_payment(request, 'final', amount, description, custom_data)
     
     return render(request, 'Client/budget_final_paiement.html', context)
 
@@ -454,18 +421,15 @@ def versement_budget_final(request):
     """
     Vue pour gérer les versements du budget final par virement bancaire
     """
-    # Récupérer les informations de paiement du client
-    client = request.user.client
-    
-    # Calculer le montant final (même logique que budget_final_paiement)
-    cout_total = 10000
-    budget_avance = 2000
-    visite_payee = 50
-    autres_frais = 500
+    # Calculs des montants
+    cout_total = 50000000
+    budget_avance = 25000000
+    visite_payee = 100000
+    autres_frais = 500000
     tva = int((cout_total - budget_avance - visite_payee + autres_frais) * 0.18)
     montant_final = cout_total - budget_avance - visite_payee + autres_frais + tva
     
-    # Récupérer le dernier projet du client (exemple)
+    # Récupérer le dernier projet du client
     try:
         projet = SuppervisionTravaux.objects.filter(client=request.user).last()
     except:
@@ -477,19 +441,25 @@ def versement_budget_final(request):
     }
     
     if request.method == 'POST':
-        # Traitement de l'upload du justificatif
         justificatif = request.FILES.get('justificatif')
         reference = request.POST.get('reference')
         commentaire = request.POST.get('commentaire', '')
         
-        if justificatif:
+        if justificatif and reference:
             try:
-                # Créer le type de paiement s'il n'existe pas
+                # Validation de la taille du fichier
+                if justificatif.size > 10 * 1024 * 1024:  # 10MB
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'Le fichier est trop volumineux. Taille maximale: 10MB'
+                    })
+                
+                # Créer le type de paiement
                 type_paiement_obj, created = TypePaiement.objects.get_or_create(
                     nom='Budget final - Virement'
                 )
                 
-                # Créer un paiement avec justificatif
+                # Créer le paiement
                 paiement = Paiement.objects.create(
                     type_paiement=type_paiement_obj,
                     montant=montant_final,
@@ -497,15 +467,55 @@ def versement_budget_final(request):
                     commande=None
                 )
                 
-                # Ici, vous pourriez sauvegarder le fichier justificatif
-                # dans un modèle séparé ou dans un champ du modèle Paiement
+                # Créer la facture
+                montant_ht = montant_final / 1.18
+                tva_amount = montant_ht * 0.18
+                
+                facture = Facture.objects.create(
+                    paiement=paiement,
+                    client=request.user.client,
+                    montant_ht=montant_ht,
+                    tva=tva_amount,
+                    montant_ttc=montant_final,
+                    statut='EMISE',
+                    description="Solde final du projet de rénovation complète - Honoraires, matériaux et finitions (Virement bancaire)",
+                    reference_virement=reference,
+                    commentaire_virement=commentaire
+                )
+                
+                # Sauvegarder le justificatif
+                JustificatifPaiement.objects.create(
+                    facture=facture,
+                    fichier=justificatif,
+                    type_paiement='virement_final'
+                )
+                
+                # Créer ou mettre à jour RenovationFaite avec le justificatif
+                renovation, created = RenovationFaite.objects.get_or_create(
+                    client=request.user,
+                    defaults={
+                        'budget2': paiement,
+                        'description': 'Rénovation finalisée - Paiement final reçu',
+                        'justificatif': justificatif
+                    }
+                )
+                if not created:
+                    renovation.justificatif = justificatif
+                    renovation.save()
+                
+                # Envoyer une notification (exemple)
+                envoyer_notification_validation(request, facture)
                 
                 return JsonResponse({
                     'success': True,
-                    'message': 'Justificatif de paiement final uploadé avec succès! Votre paiement sera vérifié sous 24h.'
+                    'message': 'Justificatif de paiement final uploadé avec succès! Votre paiement sera vérifié sous 24h.',
+                    'facture_numero': facture.numero,
+                    'facture_id': facture.id,
+                    'redirect_url': reverse('detail_facture', args=[facture.id])
                 })
                 
             except Exception as e:
+                logger.error(f"Erreur versement budget final: {str(e)}")
                 return JsonResponse({
                     'success': False,
                     'message': f'Erreur lors du traitement: {str(e)}'
@@ -513,35 +523,97 @@ def versement_budget_final(request):
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Veuillez sélectionner un fichier de preuve de paiement.'
+                'message': 'Veuillez remplir tous les champs obligatoires.'
             })
     
     return render(request, 'Client/versement_budget_final.html', context)
 
-@login_required(login_url='login')
-@user_passes_test(is_customer)
-def panier(request):
-    client = request.user.client
-    cart_items = ProduitCommande.objects.filter(created_by=client).order_by('id')
-    categories = {}
-    for item in cart_items:
-        cat = item.produit.nom
-        if cat not in categories:
-            categories[cat] = []
-        categories[cat].append(item)
-    total_price = sum(item.produit.prix for item in cart_items)
-    return render(request, 'Client/panier.html', {'categories': categories, 'total_price': total_price})
+def envoyer_notification_validation(request, facture):
+    """
+    Envoyer une notification pour validation du virement
+    (À implémenter selon vos besoins - email, notification interne, etc.)
+    """
+    try:
+        # Exemple d'envoi d'email aux administrateurs
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        subject = f"Nouveau justificatif de paiement - {facture.numero}"
+        message = f"""
+        Un nouveau justificatif de paiement a été uploadé :
+        
+        Facture: {facture.numero}
+        Client: {facture.client.get_name}
+        Montant: {facture.montant_ttc} BIF
+        Référence: {facture.reference_virement}
+        
+        Veuillez valider le paiement dans l'interface d'administration.
+        """
+        
+        # send_mail(
+        #     subject,
+        #     message,
+        #     settings.DEFAULT_FROM_EMAIL,
+        #     ['gastephane0@gmail.com'],
+        #     fail_silently=True,
+        # )
+        
+        # Pour l'instant, on log juste
+        print(f"Notification: {message}")
+        
+    except Exception as e:
+        logger.error(f"Erreur envoi notification: {str(e)}")
 
 @login_required(login_url='login')
-@user_passes_test(is_customer)
-def paiement(request):
-    return render(request, 'Client/paiement.html')
+def liste_factures(request):
+    """Liste des factures pour un client"""
+    if is_customer(request.user):
+        factures = Facture.objects.filter(client=request.user.client).order_by('-date_emission')
+    elif is_admin(request.user) or is_supervisor(request.user):
+        factures = Facture.objects.all().order_by('-date_emission')
+    else:
+        factures = Facture.objects.none()
 
-def paiement_success(request, type_paiement):
-    return render(request, 'Client/paiement_success.html', {'type_paiement': type_paiement})
+    context = {
+        'factures': factures
+    }
+    return render(request, 'Client/liste_factures.html', context)
 
-def error(request):
-    return render(request, 'Client/error.html', {'message': 'Une erreur est survenue.'})
+@login_required(login_url='login')
+def detail_facture(request, facture_id):
+    """Détail d'une facture"""
+    facture = get_object_or_404(Facture, id=facture_id)
+    
+    # Vérifier que l'utilisateur a le droit de voir cette facture
+    if is_customer(request.user) and facture.client != request.user.client:
+        return HttpResponseForbidden("Vous n'avez pas accès à cette facture.")
+    
+    context = {
+        'facture': facture
+    }
+    return render(request, 'Client/detail_facture.html', context)
+
+@login_required(login_url='login')
+def telecharger_facture_pdf(request, facture_id):
+    """Télécharger la facture en PDF"""
+    facture = get_object_or_404(Facture, id=facture_id)
+    
+    # Vérifier les permissions
+    if is_customer(request.user) and facture.client != request.user.client:
+        return HttpResponseForbidden("Vous n'avez pas accès à cette facture.")
+    
+    # Générer le HTML
+    html_string = render_to_string('Client/facture_pdf.html', {'facture': facture})
+    
+    # Créer un PDF
+    html = HTML(string=html_string, base_url=request.build_absolute_uri())
+    result = html.write_pdf()
+    
+    # Créer la réponse
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="facture_{facture.numero}.pdf"'
+    
+    return response
 
 @login_required(login_url='login')
 @user_passes_test(is_customer)
@@ -752,6 +824,246 @@ def manage_payments(request):
     paiements = Paiement.objects.all().order_by('-created_at')
     context = {'paiements': paiements}
     return render(request, 'manage_payments.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def admin_orders(request):
+    orders = (
+        Commande.objects
+        .select_related('created_by__user', 'category')
+        .prefetch_related('produitcommande_set__produit__type')
+        .annotate(total_price=Sum('produitcommande__prix'))
+        .order_by('-created_at')
+    )
+    return render(request, 'admin_orders.html', {'orders': orders})
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def admin_completed_works(request):
+    """
+    Vue pour afficher tous les travaux finalisés avec le client et le superviseur
+    """
+    # Récupérer les rénovations terminées (done=True)
+    completed_renovations = (
+        RenovationFaite.objects
+        .filter(done=True)
+        .select_related('client', 'budget2__created_by')
+        .order_by('-created_at')
+    )
+    
+    # Récupérer aussi les projets de supervision
+    supervision_projects = (
+        SuppervisionTravaux.objects
+        .select_related('client', 'budget1__created_by')
+        .order_by('-created_at')
+    )
+    
+    context = {
+        'completed_renovations': completed_renovations,
+        'supervision_projects': supervision_projects,
+    }
+    return render(request, 'admin_completed_works.html', context)
+
+
+def configure_paypal():
+    """Configuration de PayPal"""
+    paypalrestsdk.configure({
+        "mode": settings.PAYPAL_MODE,
+        "client_id": settings.PAYPAL_CLIENT_ID,
+        "client_secret": settings.PAYPAL_CLIENT_SECRET
+    })
+
+# Nouvelle vue pour créer un paiement PayPal
+@login_required(login_url='login')
+def create_paypal_payment(request, payment_type, amount, description, custom_data):
+    """Créer un paiement PayPal et rediriger vers l'approbation"""
+    configure_paypal()
+    
+    # Générer un ID unique pour la commande
+    order_id = f"{payment_type}_{request.user.id}"
+    
+    # Préparer les URLs de retour
+    return_url = request.build_absolute_uri(
+        reverse('execute_paypal_payment', kwargs={'payment_type': payment_type})
+    )
+    cancel_url = request.build_absolute_uri(
+        reverse('payment_cancel')
+    )
+    
+    # Créer le paiement PayPal
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "transactions": [{
+            "amount": {
+                "total": str(amount),
+                "currency": "BIF"
+            },
+            "description": description,
+            "custom": custom_data,
+            "invoice_number": order_id
+        }],
+        "redirect_urls": {
+            "return_url": return_url,
+            "cancel_url": cancel_url
+        }
+    })
+    
+    if payment.create():
+        # Sauvegarder les informations en session
+        request.session['payment_id'] = payment.id
+        request.session['payment_type'] = payment_type
+        request.session['order_id'] = order_id
+        request.session['amount'] = amount
+        
+        # Rediriger vers PayPal
+        for link in payment.links:
+            if link.rel == "approval_url":
+                return redirect(link.href)
+    
+    # En cas d'erreur
+    messages.error(request, f"Erreur lors de la création du paiement: {payment.error}")
+    return redirect('payment_error')
+
+# Vue pour exécuter le paiement après retour de PayPal
+@login_required(login_url='login')
+@csrf_exempt
+def execute_paypal_payment(request, payment_type):
+    """Exécuter le paiement après retour de PayPal et créer la facture"""
+    configure_paypal()
+    
+    payment_id = request.session.get('payment_id')
+    payer_id = request.GET.get('PayerID')
+    
+    if not payment_id or not payer_id:
+        messages.error(request, "Paramètres de paiement manquants")
+        return redirect('payment_error')
+    
+    payment = paypalrestsdk.Payment.find(payment_id)
+    
+    if payment.execute({"payer_id": payer_id}):
+        # Paiement réussi
+        order_id = request.session.get('order_id')
+        amount = request.session.get('amount')
+        
+        try:
+            # Créer le type de paiement
+            type_paiement_obj, created = TypePaiement.objects.get_or_create(
+                nom=payment_type.capitalize()
+            )
+            
+            # Créer le paiement
+            paiement = Paiement.objects.create(
+                type_paiement=type_paiement_obj,
+                montant=float(amount) * 7000,  # Conversion USD vers BIF
+                created_by=request.user,
+                commande=None
+            )
+            
+            # CRÉER LA FACTURE
+            montant_ht = float(amount) / 1.18
+            tva = montant_ht * 0.18
+            
+            facture = Facture.objects.create(
+                paiement=paiement,
+                client=request.user.client,
+                montant_ht=montant_ht,
+                tva=tva,
+                montant_ttc=montant_ht + tva,
+                statut='PAYEE',
+                paypal_payment_id=payment_id,
+                paypal_transaction_id=payment.transactions[0].related_resources[0].sale.id,
+                description=get_description_paiement(payment_type)
+            )
+            
+            # Actions spécifiques selon le type de paiement
+            if payment_type == 'visite':
+                ListeAttente.objects.create(
+                    created_by=request.user,
+                    client=request.user.client,
+                    done=False
+                )
+                success_url = 'liste_projet'
+            elif payment_type == 'avance':
+                success_url = 'liste_renovation'
+            elif payment_type == 'final':
+                success_url = 'paiement_success'
+            
+            # Nettoyer la session
+            request.session.pop('payment_id', None)
+            request.session.pop('payment_type', None)
+            request.session.pop('order_id', None)
+            request.session.pop('amount', None)
+            
+            messages.success(request, f"Paiement effectué avec succès! Facture {facture.numero} générée.")
+            return redirect(success_url, type_paiement=payment_type)
+            
+        except Exception as e:
+            messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
+            return redirect('payment_error')
+    else:
+        messages.error(request, f"Erreur lors du paiement: {payment.error}")
+        return redirect('payment_error')
+
+@login_required(login_url='login')
+def payment_cancel(request):
+    """Annulation du paiement"""
+    # Nettoyer la session
+    request.session.pop('payment_id', None)
+    request.session.pop('payment_type', None)
+    request.session.pop('order_id', None)
+    request.session.pop('amount', None)
+    
+    messages.info(request, "Paiement annulé. Vous pouvez réessayer quand vous le souhaitez.")
+    return render(request, 'Client/payment_cancel.html')
+
+@login_required(login_url='login')
+def payment_error(request):
+    """Erreur de paiement"""
+    return render(request, 'Client/payment_error.html')
+
+def paiement_success(request, type_paiement):
+    return render(request, 'Client/paiement_success.html', {'type_paiement': type_paiement})
+
+def error(request):
+    return render(request, 'Client/error.html', {'message': 'Une erreur est survenue.'})
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin)
+def tableau_bord_factures(request):
+    """Tableau de bord des factures pour l'admin"""
+    total_factures = Facture.objects.count()
+    factures_payees = Facture.objects.filter(statut='PAYEE').count()
+    factures_impayees = Facture.objects.filter(statut='EMISE').count()
+    factures_retard = Facture.objects.filter(statut='EMISE', date_echeance__lt=timezone.now()).count()
+    
+    chiffre_affaires = Facture.objects.filter(statut='PAYEE').aggregate(
+        total=Sum('montant_ttc')
+    )['total'] or 0
+    
+    context = {
+        'total_factures': total_factures,
+        'factures_payees': factures_payees,
+        'factures_impayees': factures_impayees,
+        'factures_retard': factures_retard,
+        'chiffre_affaires': chiffre_affaires,
+    }
+    return render(request, 'admin_tableau_bord_factures.html', context)
+
+
+def get_description_paiement(payment_type):
+    """Retourne la description selon le type de paiement"""
+    descriptions = {
+        'visite': "Visite du local et évaluation technique - Frais de déplacement et expertise",
+        'avance': "Budget d'avance pour le démarrage des travaux de rénovation",
+        'final': "Solde final du projet de rénovation complète - Honoraires et matériaux"
+    }
+    return descriptions.get(payment_type, "Paiement de services de rénovation")
 
 @login_required(login_url='login')
 @user_passes_test(is_admin)
@@ -1045,6 +1357,32 @@ def liste_attente_detail(request, liste_attente_id):
     return render(request, 'liste_attente_detail.html', {'liste_attente': liste_attente})
 
 @login_required(login_url='login')
+@user_passes_test(is_customer)
+def upload_visite_justificatif(request):
+    if request.method != 'POST':
+        return HttpResponseNotFound("Méthode non autorisée")
+
+    fichier = request.FILES.get('justificatif')
+    if not fichier:
+        return JsonResponse({'success': False, 'message': 'Aucun fichier reçu.'})
+
+    # Créer ou récupérer l'entrée de liste d'attente pour ce client
+    liste_attente, _ = ListeAttente.objects.get_or_create(
+        client=request.user.client,
+        done=False,
+        defaults={'created_by': request.user}
+    )
+
+    liste_attente.justificatif = fichier
+    liste_attente.save()
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Preuve de paiement uploadée.',
+        'liste_attente_id': liste_attente.id,
+    })
+
+@login_required(login_url='login')
 @user_passes_test(is_supervisor)
 def mark_liste_attente_done(request, liste_attente_id):
     liste_attente = get_object_or_404(ListeAttente, id=liste_attente_id)
@@ -1054,6 +1392,127 @@ def mark_liste_attente_done(request, liste_attente_id):
         return redirect('liste_attente_detail', liste_attente_id=liste_attente_id)
     return render(request, 'confirm_mark_done.html', {'liste_attente': liste_attente})
 
+@login_required(login_url='login')
+@user_passes_test(is_customer)
+def upload_avance_justificatif(request):
+    if request.method != 'POST':
+        return HttpResponseNotFound("Méthode non autorisée")
+
+    fichier = request.FILES.get('justificatif')
+    if not fichier:
+        return JsonResponse({'success': False, 'message': 'Aucun fichier reçu.'})
+
+    # Validation de la taille du fichier (5MB max)
+    if fichier.size > 5 * 1024 * 1024:
+        return JsonResponse({
+            'success': False,
+            'message': 'Le fichier est trop volumineux. Taille maximale: 5MB'
+        })
+
+    # Créer ou récupérer l'entrée de supervision pour ce client
+    # Note: Vous devrez peut-être créer un Paiement temporaire ou adapter cette logique
+    try:
+        # Vérifier si le client a déjà un projet en cours
+        projet = SuppervisionTravaux.objects.filter(
+            client=request.user
+        ).order_by('-created_at').first()
+        
+        if not projet:
+            # Créer un type de paiement pour l'avance si nécessaire
+            type_paiement_avance, _ = TypePaiement.objects.get_or_create(
+                nom='Budget avance - Virement'
+            )
+            
+            # Créer un paiement temporaire (montant à ajuster selon votre logique)
+            paiement_avance = Paiement.objects.create(
+                type_paiement=type_paiement_avance,
+                montant=25000000,  
+                created_by=request.user,
+                commande=None
+            )
+            
+            # Créer un nouveau projet
+            projet = SuppervisionTravaux.objects.create(
+                client=request.user,
+                budget1=paiement_avance,
+                description="Projet en attente de validation du budget d'avance"
+            )
+        
+        # Attacher le justificatif
+        projet.justificatif = fichier
+        projet.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Preuve de paiement uploadée avec succès!',
+            'projet_id': projet.id,
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erreur lors du traitement: {str(e)}'
+        })
+
+
+@login_required(login_url='login')
+@user_passes_test(is_customer)
+def upload_final_justificatif(request):
+    if request.method != 'POST':
+        return HttpResponseNotFound("Méthode non autorisée")
+
+    fichier = request.FILES.get('justificatif')
+    if not fichier:
+        return JsonResponse({'success': False, 'message': 'Aucun fichier reçu.'})
+
+    # Validation de la taille du fichier (10MB max pour le paiement final)
+    if fichier.size > 10 * 1024 * 1024:
+        return JsonResponse({
+            'success': False,
+            'message': 'Le fichier est trop volumineux. Taille maximale: 10MB'
+        })
+
+    # Créer ou récupérer l'entrée de rénovation pour ce client
+    try:
+        # Vérifier si le client a déjà une rénovation en cours
+        renovation = RenovationFaite.objects.filter(
+            client=request.user
+        ).order_by('-created_at').first()
+        
+        if not renovation:
+            # Créer un type de paiement pour le final si nécessaire
+            type_paiement_final, _ = TypePaiement.objects.get_or_create(
+                nom='Budget final - Virement'
+            )
+            
+            # Créer un paiement temporaire (montant à ajuster selon votre logique)
+            paiement_final = Paiement.objects.create(
+                type_paiement=type_paiement_final,
+                montant=30000000,  
+                created_by=request.user,
+                commande=None
+            )
+            
+            # Créer une nouvelle rénovation
+            renovation = RenovationFaite.objects.create(
+                client=request.user,
+                budget2=paiement_final,
+                description="Rénovation en attente de validation du budget final"
+            )
+        
+        # Attacher le justificatif
+        renovation.justificatif = fichier
+        renovation.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Preuve de paiement final uploadée avec succès!',
+            'renovation_id': renovation.id,
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erreur lors du traitement: {str(e)}'
+        })
 
 @login_required(login_url='login')
 @user_passes_test(is_supervisor)

@@ -28,9 +28,8 @@
                                     <h6><strong>Coordonnées bancaires:</strong></h6>
                                     <div class="border p-3 rounded bg-white">
                                         <p><strong>Banque:</strong> Banque de Crédit de Bujumbura (BCB)</p>
-                                        <p><strong>Numéro de compte:</strong> 12345-67890-ABC</p>
+                                        <p><strong>Numéro de compte:</strong> 344 54 31749</p>
                                         <p><strong>Nom du bénéficiaire:</strong> RENOVATION IMMOBILIERE SARL</p>
-                                        <p><strong>Code SWIFT:</strong> BCBUBIBJ</p>
                                     </div>
                                     
                                     <div class="alert alert-warning mt-3">
@@ -97,13 +96,13 @@
                     </div>
 
                     <!-- Étapes de finalisation -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="card bg-success text-white">
+                    <div class="row mt-3 text-center">
+                        <div class="card-body col-6 ">
+                            <div class="card bg-success text-white text-center">
                                 <div class="card-header">
                                     <h5><i class="fas fa-list-ol"></i> Étapes de Finalisation du Projet</h5>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body text-center">
                                     <div class="row">
                                         <div class="col-md-2 text-center">
                                             <div class="step">
@@ -111,39 +110,32 @@
                                                 <h6>1. Virement Final</h6>
                                                 <p class="small">Effectuer le virement du solde</p>
                                             </div>
-                                        </div>
+                                        </div><br>
                                         <div class="col-md-2 text-center">
                                             <div class="step">
                                                 <i class="fas fa-upload fa-2x mb-2"></i>
                                                 <h6>2. Upload Justificatif</h6>
                                                 <p class="small">Télécharger la preuve de paiement</p>
                                             </div>
-                                        </div>
+                                        </div><br>
                                         <div class="col-md-2 text-center">
                                             <div class="step">
                                                 <i class="fas fa-check-circle fa-2x mb-2"></i>
                                                 <h6>3. Validation</h6>
                                                 <p class="small">Validation sous 24h</p>
                                             </div>
-                                        </div>
+                                        </div><br>
                                         <div class="col-md-2 text-center">
                                             <div class="step">
                                                 <i class="fas fa-certificate fa-2x mb-2"></i>
                                                 <h6>4. Certificats</h6>
                                                 <p class="small">Émission des documents</p>
                                             </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="step">
-                                                <i class="fas fa-handshake fa-2x mb-2"></i>
-                                                <h6>5. Livraison</h6>
-                                                <p class="small">Remise officielle du projet</p>
-                                            </div>
-                                        </div>
+                                        </div><br><br><br>
                                         <div class="col-md-2 text-center">
                                             <div class="step">
                                                 <i class="fas fa-tools fa-2x mb-2"></i>
-                                                <h6>6. SAV Actif</h6>
+                                                <h6>5. SAV Actif</h6>
                                                 <p class="small">Service après-vente activé</p>
                                             </div>
                                         </div>
@@ -154,8 +146,8 @@
                     </div>
 
                     <!-- Documents à recevoir -->
-                    <div class="row mt-4">
-                        <div class="col-12">
+                    <div class="row mt-4 text-center">
+                        <div class="col-12 text-center">
                             <div class="card border-info">
                                 <div class="card-header bg-info text-white">
                                     <h5><i class="fas fa-file-alt"></i> Documents que vous recevrez</h5>
@@ -165,7 +157,6 @@
                                         <div class="col-md-4">
                                             <h6><i class="fas fa-certificate text-success"></i> Certificats:</h6>
                                             <ul class="list-unstyled small">
-                                                <li><i class="fas fa-check text-success"></i> Certificat de conformité</li>
                                                 <li><i class="fas fa-check text-success"></i> Garantie 2 ans</li>
                                                 <li><i class="fas fa-check text-success"></i> Certificat de fin de travaux</li>
                                             </ul>
@@ -173,7 +164,6 @@
                                         <div class="col-md-4">
                                             <h6><i class="fas fa-folder text-warning"></i> Dossier technique:</h6>
                                             <ul class="list-unstyled small">
-                                                <li><i class="fas fa-check text-success"></i> Plans as-built</li>
                                                 <li><i class="fas fa-check text-success"></i> Notice d'entretien</li>
                                                 <li><i class="fas fa-check text-success"></i> Fiches techniques matériaux</li>
                                             </ul>
@@ -182,7 +172,6 @@
                                             <h6><i class="fas fa-headset text-info"></i> Services:</h6>
                                             <ul class="list-unstyled small">
                                                 <li><i class="fas fa-check text-success"></i> Accès SAV 24/7</li>
-                                                <li><i class="fas fa-check text-success"></i> Maintenance préventive</li>
                                                 <li><i class="fas fa-check text-success"></i> Support technique</li>
                                             </ul>
                                         </div>
@@ -216,7 +205,6 @@ $(document).ready(function() {
         
         let formData = new FormData(this);
         
-        // Afficher une confirmation spéciale pour le paiement final
         if (confirm('ATTENTION: Ce paiement finalise définitivement votre projet de rénovation.\n\nÊtes-vous sûr de vouloir continuer?')) {
             $.ajax({
                 url: "{% url 'versement_budget_final' %}",
@@ -229,38 +217,33 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#message').html('<div class="alert alert-success"><i class="fas fa-trophy"></i> <strong>Félicitations!</strong> ' + response.message + '</div>');
+                        $('#message').html(`
+                            <div class="alert alert-success">
+                                <i class="fas fa-trophy"></i> 
+                                <strong>Félicitations!</strong> ${response.message}
+                                <br><small>Facture: ${response.facture_numero}</small>
+                            </div>
+                        `);
                         $('#uploadFinalForm')[0].reset();
                         
-                        // Redirection spéciale pour le paiement final
+                        // Redirection vers la facture
                         setTimeout(function() {
-                            window.location.href = "{% url 'paiement_success' 'final' %}";
+                            if (response.redirect_url) {
+                                window.location.href = response.redirect_url;
+                            } else {
+                                window.location.href = "{% url 'detail_facture' 0 %}".replace('0', response.facture_id);
+                            }
                         }, 3000);
                     } else {
-                        $('#message').html('<div class="alert alert-danger"><i class="fas fa-times"></i> ' + response.message + '</div>');
+                        $('#message').html(`<div class="alert alert-danger"><i class="fas fa-times"></i> ${response.message}</div>`);
                     }
                 },
-                error: function() {
-                    $('#message').html('<div class="alert alert-danger"><i class="fas fa-times"></i> Erreur lors du traitement du paiement final.</div>');
+                error: function(xhr, status, error) {
+                    $('#message').html('<div class="alert alert-danger"><i class="fas fa-times"></i> Erreur réseau lors du traitement du paiement final.</div>');
                 }
             });
         }
     });
-    
-    // Validation du fichier (taille augmentée pour le paiement final)
-    $('#justificatif').change(function() {
-        let file = this.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) { // 10MB pour le paiement final
-                alert('Le fichier est trop volumineux. Taille maximale: 10MB');
-                $(this).val('');
-            }
-        }
-    });
-    
-    // Animation spéciale pour le paiement final
-    $('.card').addClass('border-success');
-    $('h2').addClass('text-success');
 });
 </script>
 

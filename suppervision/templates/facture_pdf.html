@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Facture {{ facture.numero }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .entreprise-info { float: left; width: 50%; }
+        .client-info { float: right; width: 45%; text-align: right; }
+        .clear { clear: both; }
+        .facture-info { margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total { font-weight: bold; }
+        .footer { margin-top: 50px; border-top: 1px solid #333; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="entreprise-info">
+            <h2>{{ facture.entreprise_nom }}</h2>
+            <p>{{ facture.entreprise_adresse|linebreaksbr }}</p>
+            <p>Tél: {{ facture.entreprise_telephone }}</p>
+            <p>Email: {{ facture.entreprise_email }}</p>
+            <p>SIRET: {{ facture.entreprise_siret }}</p>
+            <p>TVA: {{ facture.entreprise_tva }}</p>
+        </div>
+        <div class="client-info">
+            <h3>FACTURE</h3>
+            <p><strong>Numéro: {{ facture.numero }}</strong></p>
+            <p>Date: {{ facture.date_emission|date:"d/m/Y" }}</p>
+            <p>Échéance: {{ facture.date_echeance|date:"d/m/Y" }}</p>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="client-info">
+        <h4>Client</h4>
+        <p><strong>{{ facture.client.get_name }}</strong></p>
+        <p>{{ facture.client.address }}</p>
+        <p>Tél: {{ facture.client.mobile }}</p>
+        <p>Email: {{ facture.client.get_email_field_name }}</p>
+    </div>
+
+    <div class="facture-info">
+        <h4>Description des services</h4>
+        <p>{{ facture.description }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Montant HT</th>
+                <th>TVA</th>
+                <th>Montant TTC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ facture.description }}</td>
+                <td>{{ facture.montant_ht }} BIF</td>
+                <td>{{ facture.tva }} BIF</td>
+                <td>{{ facture.montant_ttc }} BIF</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p><strong>Informations de paiement:</strong></p>
+        <p>PayPal Payment ID: {{ facture.paypal_payment_id }}</p>
+        <p>Transaction ID: {{ facture.paypal_transaction_id }}</p>
+        <p>Statut: {{ facture.get_statut_display }}</p>
+        <p>Date de paiement: {{ facture.paiement.created_at|date:"d/m/Y H:i" }}</p>
+    </div>
+</body>
+</html>

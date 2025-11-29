@@ -14,17 +14,15 @@
                     <th>Type de Paiement</th>
                     <th>Montant</th>
                     <th>Date de Paiement</th>
-                    <th>Superviseur</th>
                 </tr>
             </thead>
             <tbody>
                 {% for paiement in paiements %}
                 <tr>
-                    <td>{{ paiement.commande.created_by.user.first_name }} {{ paiement.commande.created_by.user.last_name }}</td>
+                    <td>{{ paiement.created_by.username }}</td>
                     <td>{{ paiement.type_paiement }}</td>
                     <td>{{ paiement.montant }} BIF</td>
                     <td>{{ paiement.created_at|date:'j M Y H:i' }}</td>
-                    <td>{{ paiement.created_by.username }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

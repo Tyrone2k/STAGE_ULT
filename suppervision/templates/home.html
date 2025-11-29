@@ -97,11 +97,32 @@
 
 
 <!-- Hero Section -->
-<section class="hero-section">
-    <h1 class="display-3 fw-bold">Rénovation Immobilière</h1>
-    <p class="lead fw-normal">Transformez vos espaces avec nos designs intérieurs et extérieurs sur mesure.</p>
-    <a class="card-btn3" href="{% url 'login' %}">Prendre un RDV</a>
+<section class="hero-section" style="position:relative; overflow:hidden; min-height:55vh;">
+  <!-- Dégradé principal comme background -->
+  <div style="
+    position:absolute; inset:0; z-index:0;
+    background: radial-gradient(circle at 60% 35%, #000a2cff 0%, #2011a1ff 60%, #010003ff 100%);
+  "></div>
+  <!-- Forme abstraite floue violette, façon 'carte' JetBrains -->
+  <div style="
+    position:absolute; z-index:1;
+    width: 65vw; height: 80vh;
+    left: 45vw; top: 25vh;
+    transform: translate(-50%,-50%) rotate(12deg);
+    background: rgba(3, 0, 151, 0.22);
+    filter: blur(36px);
+    border-radius: 32% 68% 43% 57% / 43% 29% 71% 57%;
+    pointer-events: none;
+  "></div>
+  <!-- Overlay sombre pour la lisibilité texte -->
+  <div style="position:absolute; inset:0; background:rgba(7, 1, 71, 0.32); z-index:2;"></div>
+  <div style="position:relative; z-index:3; display:flex; flex-direction:column; justify-content:center; align-items:center; height: 100%;">
+      <h1 class="display-3 fw-bold">Rénovation Immobilière</h1>
+      <p class="lead fw-normal">Transformez vos espaces avec nos designs intérieurs et extérieurs sur mesure.</p>
+      <a class="card-btn3" href="{% url 'login' %}">Prendre un RDV</a>
+  </div>
 </section>
+
 
 <!-- Designs Section -->
 <section id="designs" class="container my-5">

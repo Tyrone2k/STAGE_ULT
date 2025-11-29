@@ -1,0 +1,65 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Mes Factures</h1>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            {% if factures %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Date</th>
+                            <th>Échéance</th>
+                            <th>Montant TTC</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for facture in factures %}
+                        <tr>
+                            <td><strong>{{ facture.numero }}</strong></td>
+                            <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                            <td>
+                                {{ facture.date_echeance|date:"d/m/Y" }}
+                                {% if facture.est_en_retard %}
+                                <span class="badge bg-danger">Retard: {{ facture.jours_retard }}j</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ facture.montant_ttc }} BIF</td>
+                            <td>
+                                <span class="badge 
+                                    {% if facture.statut == 'PAYEE' %}bg-success
+                                    {% elif facture.statut == 'EMISE' %}bg-warning
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ facture.get_statut_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'detail_facture' facture.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                                <a href="#" class="btn btn-sm btn-success">
+                                    <i class="fas fa-download"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucune facture disponible.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

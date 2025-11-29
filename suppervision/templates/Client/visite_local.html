@@ -34,10 +34,10 @@
             <h5 class="card-title">Montant à payer</h5>
             <form method="post">
                 {% csrf_token %}
-                <div class="mb-3">
+                <div class="text-center" style="margin-bottom: 20px;">
                     <input type="number" class="form-control" name="montant" value="100000" readonly>
                 </div>
-                <div><a href="{% url 'visite_paiement' %}" class="card-btn">Mode de paiement</a></div><br>
+                <div class="text-center"><a href="{% url 'visite_paiement' %}" class="card-btn">Mode de paiement</a></div><br>
             </form>
         </div>
     </div>

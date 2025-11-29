@@ -7,30 +7,7 @@
         <div class="col-md-8">
             <div class="card mx-auto shadow p-4">
                 <div class="card-body text-center">
-                    <h2 class="mb-4"><i class="fas fa-receipt"></i> Paiement Final - Solde Total</h2>
-                    <p class="text-muted mb-4">Montant final à payer: <strong>{{ montant_final }} BIF</strong></p>
-                    
-                    <!-- Récapitulatif des paiements -->
-                    <div class="card bg-light mb-4">
-                        <div class="card-header">
-                            <h5><i class="fas fa-calculator"></i> Récapitulatif des Paiements</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-start">
-                                <div class="col-md-6">
-                                    <p><strong>Coût total du projet:</strong> {{ cout_total }} BIF</p>
-                                    <p><strong>Budget d'avance payé:</strong> -{{ budget_avance }} BIF</p>
-                                    <p><strong>Visite payée:</strong> -{{ visite_payee }} BIF</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Autres frais:</strong> {{ autres_frais }} BIF</p>
-                                    <p><strong>TVA (18%):</strong> {{ tva }} BIF</p>
-                                    <hr>
-                                    <p class="text-primary fs-5"><strong>Solde à payer:</strong> {{ montant_final }} BIF</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <h2 class="mb-4"><i class="fas fa-receipt"></i> Paiement Final</h2>
                     
                     <div class="row g-4">
                         <!-- Option PayPal -->
@@ -40,17 +17,10 @@
                                     <i class="fab fa-paypal fa-3x text-primary mb-3"></i>
                                     <h5 class="card-title">PayPal</h5>
                                     <p class="card-text">Paiement sécurisé et instantané via PayPal</p>
-                                    <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                                        <input type="hidden" name="cmd" value="_xclick">
-                                        <input type="hidden" name="business" value="sb-47jbkn25869203@business.example.com">
-                                        <input type="hidden" name="item_name" value="Paiement Final - Rénovation Complète">
-                                        <input type="hidden" name="amount" value="{{ montant_final_usd }}">
-                                        <input type="hidden" name="currency_code" value="USD">
-                                        <input type="hidden" name="return" value="{{ request.build_absolute_uri }}{% url 'paiement_success' 'final' %}?payment=success">
-                                        <input type="hidden" name="cancel_return" value="{{ request.build_absolute_uri }}{% url 'budget_final_paiement' %}?payment=cancelled">
-                                        <!-- <input type="hidden" name="notify_url" value="{{ request.build_absolute_uri }}{% url 'paypal_ipn' %}"> -->
-                                        <input type="hidden" name="custom" value="budget_final_{{ user.id }}">
-                                        <button type="submit" class="card-btn">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="montant_final_usd" value="{{ montant_final_usd }}">
+                                        <button type="submit" class="card-btn" onclick="return confirmFinalPayment()">
                                             <i class="fab fa-paypal"></i> Payer avec PayPal
                                         </button>
                                     </form>
@@ -101,7 +71,6 @@
                                 <li><i class="fas fa-arrow-right text-primary"></i> Finitions et retouches</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Nettoyage final</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Garantie des travaux (2 ans)</li>
-                                <li><i class="fas fa-arrow-right text-primary"></i> Certificat de conformité</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -111,7 +80,6 @@
                                 <li><i class="fas fa-arrow-right text-primary"></i> Maintenance préventive (6 mois)</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Conseils d'entretien personnalisés</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Support technique 24/7</li>
-                                <li><i class="fas fa-arrow-right text-primary"></i> Remise sur futurs projets (10%)</li>
                             </ul>
                         </div>
                     </div>
@@ -140,7 +108,7 @@
                         <div class="col-md-12">
                             <h6><strong>Modalités de paiement final:</strong></h6>
                             <ul class="small">
-                                <li>Le paiement final doit être effectué avant la livraison définitive du projet</li>
+                                <li>Le paiement final doit être effectué avant la fin définitive du projet</li>
                                 <li>Une fois le paiement validé, vous disposez de 48h pour signaler d'éventuelles réserves</li>
                                 <li>La garantie de 2 ans prend effet dès réception du paiement final</li>
                                 <li>Un certificat de conformité vous sera remis sous 5 jours ouvrables</li>

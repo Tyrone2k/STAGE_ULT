@@ -61,7 +61,47 @@ class ProduitCommandeAdmin(admin.ModelAdmin):
 class PaiementAdmin(admin.ModelAdmin):
     list_display = "type_paiement", "commande", "montant", "created_by", "created_at"
 
+@admin.register(Facture)
+class FactureAdmin(admin.ModelAdmin):
+    list_display = ('numero', 'client', 'date_emission', 'date_echeance', 'statut', 'montant_ttc', 'est_en_retard')
+    list_filter = ('statut', 'date_emission', 'date_echeance')
+    search_fields = ('numero', 'client__user__first_name', 'client__user__last_name', 'paypal_payment_id')
+    readonly_fields = ('numero', 'date_emission', 'paypal_payment_id', 'paypal_transaction_id')
+    fieldsets = (
+        ('Informations Facture', {
+            'fields': ('numero', 'paiement', 'client', 'date_emission', 'date_echeance', 'statut')
+        }),
+        ('Montants', {
+            'fields': ('montant_ht', 'tva', 'montant_ttc')
+        }),
+        ('Détails Paiement', {
+            'fields': ('paypal_payment_id', 'paypal_transaction_id', 'description')
+        }),
+        ('Informations Entreprise', {
+            'fields': ('entreprise_nom', 'entreprise_adresse', 'entreprise_telephone', 
+                      'entreprise_email', 'entreprise_siret', 'entreprise_tva'),
+            'classes': ('collapse',)
+        }),
+    )
 
+    def est_en_retard(self, obj):
+        return obj.est_en_retard
+    est_en_retard.boolean = True
+    est_en_retard.short_description = 'En retard'
+
+    actions = ['marquer_comme_payee', 'generer_pdfs']
+
+    def marquer_comme_payee(self, request, queryset):
+        updated = queryset.update(statut='PAYEE')
+        self.message_user(request, f"{updated} facture(s) marquée(s) comme payée(s).")
+    marquer_comme_payee.short_description = "Marquer comme payée"
+
+    def generer_pdfs(self, request, queryset):
+        # Implémenter la génération de PDFs
+        self.message_user(request, "Génération de PDFs à implémenter.")
+    generer_pdfs.short_description = "Générer les PDFs"
+    
+    
 @admin.register(ListeAttente)
 class ListeAttenteAdmin(admin.ModelAdmin):
     list_display = "created_by", "client", "created_at", "done"

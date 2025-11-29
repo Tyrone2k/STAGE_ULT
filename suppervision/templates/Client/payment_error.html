@@ -1,0 +1,27 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card mx-auto text-center" style="max-width: 500px;">
+        <div class="card-body">
+            <i class="fas fa-exclamation-triangle text-warning fa-5x mb-4"></i>
+            <h2>Erreur de Paiement</h2>
+            <p class="mb-4">Une erreur s'est produite lors du traitement de votre paiement.</p>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="text-center">
+                <a href="{% url 'client-home' %}" class="btn btn-primary">
+                    Retour à l'accueil
+                </a><br><br>
+                <a href="{% url 'paiement' %}" class="btn btn-outline-secondary">
+                    Réessayer le paiement
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

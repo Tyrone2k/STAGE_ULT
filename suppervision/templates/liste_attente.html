@@ -16,6 +16,7 @@
                     <th>Client</th>
                     <th>Date</th>
                     <th>État</th>
+                    <th>Justificatif</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -26,6 +27,15 @@
                     <td>{{ entry.created_by.username }}</td>
                     <td>{{ entry.client.user.username }}</td>
                     <td>{{ entry.created_at|date:'j M Y H:i' }}</td>
+                    <td>
+                      {% if entry.justificatif %}
+                        <a href="{{ entry.justificatif.url }}" target="_blank" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-download"></i> Voir
+                        </a>
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
                     <td>{% if entry.done %}Terminé{% else %}En Attente{% endif %}</td>
                     <td>
                         <a href="{% url 'liste_attente_detail' liste_attente_id=entry.id %}" class="form-btn btn2">Détails</a>

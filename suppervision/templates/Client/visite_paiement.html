@@ -13,10 +13,13 @@
             <!-- PayPal Payment Option -->
             <div class="mb-4">
                 <h5>Option 1: Paiement PayPal</h5>
-                <p>Paiement sécurisé via PayPal</p>
-                <button id="paypal-btn" class="card-btn" onclick="processPayPalPayment()">
-                    <i class="fab fa-paypal"></i> Payer avec PayPal
-                </button>
+                <p>Paiement sécurisé via PayPal - 100000 BIF</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="card-btn">
+                        <i class="fab fa-paypal"></i> Payer avec PayPal
+                    </button>
+                </form>
             </div>
             
             <hr>
@@ -35,7 +38,7 @@
                 <div class="card p-3" style="background-color: #f8f9fa;">
                     <h6><strong>Informations Bancaires</strong></h6>
                     <p><strong>Banque:</strong> Banque de Crédit du Burundi (BCB)</p>
-                    <p><strong>Numéro de compte:</strong> 12345678901234567890</p>
+                    <p><strong>Numéro de compte:</strong> 344 54 31749</p>
                     <p><strong>Nom du bénéficiaire:</strong> Rénovation Immobilière SARL</p>
                     
                     <hr>
@@ -142,18 +145,28 @@ function uploadPaymentProof() {
     const originalText = uploadBtn.innerHTML;
     uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Upload...';
     uploadBtn.disabled = true;
-    
-    setTimeout(() => {
-        alert('Preuve de paiement uploadée avec succès! Votre paiement sera vérifié sous 24h.');
-        uploadBtn.innerHTML = '<i class="fas fa-check"></i> Confirmé';
-        uploadBtn.classList.remove('card-btn2');
-        uploadBtn.classList.add('card-btn');
-        
-        // Redirect after confirmation
-        setTimeout(() => {
+
+    // Upload the file to the server
+    const formData = new FormData();
+    formData.append('justificatif', file);
+    fetch('{% url "upload_visite_justificatif" %}', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        body: formData
+    }).then(response => response.json()).then(data => {
+        if (data.success) {
+            alert('Preuve de paiement uploadée avec succès! Votre paiement sera vérifié sous 24h.');
+            uploadBtn.innerHTML = '<i class="fas fa-check"></i> Confirmé';
+            uploadBtn.classList.remove('card-btn2');
+            uploadBtn.classList.add('card-btn');
             window.location.href = "{% url 'client-home' %}";
-        }, 2000);
-    }, 2000);
+        } else {
+            alert(data.message || 'Erreur lors de l\'upload');
+        }
+    }).catch(error => {
+        console.error('Erreur lors de l\'upload:', error);
+        alert('Erreur lors de l\'upload. Veuillez réessayer.');
+    });
 }
 </script>
 

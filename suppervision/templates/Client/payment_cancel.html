@@ -1,0 +1,22 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card mx-auto text-center" style="max-width: 500px;">
+        <div class="card-body">
+            <i class="fas fa-times-circle text-danger fa-5x mb-4"></i>
+            <h2>Paiement Annulé</h2>
+            <p class="mb-4">Votre paiement a été annulé. Aucun montant n'a été débité.</p>
+            <div class="text-center">
+                <a href="{% url 'client-home' %}" class="card-btn2">
+                    Retour à l'accueil
+                </a><br><br>
+                <a href="{% url 'paiement' %}" class="card-btn1">
+                    Réessayer le paiement
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "Client/clientbase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Facture {{ facture.numero }}</h4>
+                </div>
+                <div class="card-body">
+                    <!-- En-tête -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Émetteur</h5>
+                            <address>
+                                <strong>{{ facture.entreprise_nom }}</strong><br>
+                                {{ facture.entreprise_adresse|linebreaksbr }}<br>
+                                Tél: {{ facture.entreprise_telephone }}<br>
+                                Email: {{ facture.entreprise_email }}<br>
+                                SIRET: {{ facture.entreprise_siret }}<br>
+                                TVA: {{ facture.entreprise_tva }}
+                            </address>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5>Client</h5>
+                            <address>
+                                <strong>{{ facture.client.get_name }}</strong><br>
+                                {{ facture.client.address }}<br>
+                                Tél: {{ facture.client.mobile }}<br>
+                                Email: {{ facture.client.get_email_field_name }}
+                            </address>
+                        </div>
+                    </div>
+
+                    <!-- Informations facture -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Date d'émission:</th>
+                                    <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date d'échéance:</th>
+                                    <td>
+                                        {{ facture.date_echeance|date:"d/m/Y" }}
+                                        {% if facture.est_en_retard %}
+                                        <span class="badge bg-danger">En retard ({{ facture.jours_retard }} jours)</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Statut:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if facture.statut == 'PAYEE' %}bg-success
+                                            {% elif facture.statut == 'EMISE' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ facture.get_statut_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Référence PayPal:</th>
+                                    <td>{{ facture.paypal_payment_id|default:"N/A" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Transaction PayPal:</th>
+                                    <td>{{ facture.paypal_transaction_id|default:"N/A" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Type de paiement:</th>
+                                    <td>{{ facture.paiement.type_paiement.nom }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h5>Description des services</h5>
+                        <div class="border p-3 bg-light">
+                            {{ facture.description|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Montants -->
+                    <div class="row justify-content-end">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Montant HT:</th>
+                                    <td class="text-end">{{ facture.montant_ht }} BIF</td>
+                                </tr>
+                                <tr>
+                                    <th>TVA (18%):</th>
+                                    <td class="text-end">{{ facture.tva }} BIF</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <th><strong>Montant TTC:</strong></th>
+                                    <td class="text-end"><strong>{{ facture.montant_ttc }} BIF</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="#" class="btn btn-success">
+                                <i class="fas fa-download"></i> Télécharger PDF
+                            </a>
+                            <a href="{% url 'liste_factures' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour aux factures
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
