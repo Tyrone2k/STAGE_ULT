@@ -389,10 +389,10 @@ def budget_final_paiement(request):
     Vue pour gérer le paiement du budget final avec PayPal
     """
     # Calculs existants...
-    cout_total = 50000000
-    budget_avance = 25000000
+    cout_total = 40000000
+    budget_avance = 30000000
     visite_payee = 100000
-    autres_frais = 500000
+    autres_frais = 1000000
     tva = int((cout_total - budget_avance - visite_payee + autres_frais) * 0.18)
     montant_final = cout_total - budget_avance - visite_payee + autres_frais + tva
     
@@ -422,10 +422,10 @@ def versement_budget_final(request):
     Vue pour gérer les versements du budget final par virement bancaire
     """
     # Calculs des montants
-    cout_total = 50000000
-    budget_avance = 25000000
+    cout_total = 40000000
+    budget_avance = 30000000
     visite_payee = 100000
-    autres_frais = 500000
+    autres_frais = 1000000
     tva = int((cout_total - budget_avance - visite_payee + autres_frais) * 0.18)
     montant_final = cout_total - budget_avance - visite_payee + autres_frais + tva
     
